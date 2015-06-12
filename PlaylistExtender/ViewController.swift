@@ -11,7 +11,10 @@ import UIKit
 class ViewController: UIViewController {
     
     let clientID: String = "89ce87c720004dcda7261f1c49c15905"
+    let clientSecret: String = "5e0e325e2b1f4dc093bfc0c2fdaefc8d"
     let Callback = NSURL(string: "playlistextenderlogin://callback")!
+    let kTokenSwapURL = NSURL(string: "http://localhost:1234/swap")!
+    let kTokenRefreshURL = NSURL(string: "http://localhost:1234/refresh")!
     let scope: AnyObject = [SPTAuthStreamingScope, SPTAuthPlaylistModifyPublicScope, SPTAuthPlaylistReadPrivateScope]
     let response: String = "code"
     
@@ -74,8 +77,8 @@ class ViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         //any pre-segue stuff goes in here
         if let pc = segue.destinationViewController as? PlaylistController {
-            if session.isValid() {
-                pc.session = session
+            if (sender as! SPTSession).isValid() {
+                pc.session = (sender as! SPTSession)
             }
         }
         
@@ -88,12 +91,17 @@ class ViewController: UIViewController {
 
     @IBAction func LoginSpotify(sender: UIButton) {
         
-       // let url = SPTAuth.loginURLForClientId(clientID, withRedirectURL: NSURL(string: Callback), scopes: scope as! [AnyObject], responseType: response)
+        //let url = SPTAuth.loginURLForClientId(clientID, withRedirectURL: Callback, scopes: scope as! [AnyObject], responseType: response)
         let auth = SPTAuth.defaultInstance()
+        
+        
         
         auth.clientID = clientID
         auth.redirectURL = Callback
+        auth.tokenSwapURL = kTokenSwapURL
+        auth.tokenRefreshURL = kTokenRefreshURL
         auth.requestedScopes = scope as! [AnyObject]
+        
         
         let url = auth.loginURL
         

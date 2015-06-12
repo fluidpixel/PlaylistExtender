@@ -23,13 +23,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject?) -> Bool {
-            
+        
+        //if (SPTAuth.defaultInstance().canHandleURL(url)) {
             SPTAuth.defaultInstance().handleAuthCallbackWithTriggeredAuthURL(url, callback: { (error: NSError!, session: SPTSession!) -> Void in
                 
                 if error != nil {
                     println("error" + "\(error.localizedDescription)")
                     return
                 }
+                
+                
+                
                 let defaults = NSUserDefaults.standardUserDefaults()
                 
                 let sessionData = NSKeyedArchiver.archivedDataWithRootObject(session)
@@ -40,6 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 NSNotificationCenter.defaultCenter().postNotificationName("LoginSuccessful", object: nil)
                 
             })
+       // }
         
         return false
     }

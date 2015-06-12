@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B9D92FC71B27193D0065FAFC /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D92FC61B27193D0065FAFC /* Spotify.framework */; };
 		B9DDE1A91B1C6FC0008341BE /* PlaylistBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE1A81B1C6FC0008341BE /* PlaylistBuilder.swift */; };
 		B9DDE22E1B1713E900BC54FA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE22D1B1713E900BC54FA /* AppDelegate.swift */; };
 		B9DDE2301B1713E900BC54FA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE22F1B1713E900BC54FA /* ViewController.swift */; };
@@ -14,7 +15,6 @@
 		B9DDE2351B1713E900BC54FA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9DDE2341B1713E900BC54FA /* Images.xcassets */; };
 		B9DDE2381B1713E900BC54FA /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9DDE2361B1713E900BC54FA /* LaunchScreen.xib */; };
 		B9DDE2441B1713E900BC54FA /* PlaylistExtenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE2431B1713E900BC54FA /* PlaylistExtenderTests.swift */; };
-		B9DDE24F1B171D9800BC54FA /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9DDE24E1B171D9700BC54FA /* Spotify.framework */; };
 		B9DDE2511B1726BC00BC54FA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9DDE2501B1726BC00BC54FA /* AVFoundation.framework */; };
 		B9DDE2531B1726C600BC54FA /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9DDE2521B1726C600BC54FA /* SystemConfiguration.framework */; };
 		B9DDE2561B17477300BC54FA /* Setup.m in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE2551B17477300BC54FA /* Setup.m */; };
@@ -33,6 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B9D92FC61B27193D0065FAFC /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Spotify.framework; path = "../../../Downloads/ios-sdk-beta-9/Spotify.framework"; sourceTree = "<group>"; };
 		B9DDE1A81B1C6FC0008341BE /* PlaylistBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistBuilder.swift; sourceTree = "<group>"; };
 		B9DDE2281B1713E900BC54FA /* PlaylistExtender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaylistExtender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9DDE22C1B1713E900BC54FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -44,7 +45,6 @@
 		B9DDE23D1B1713E900BC54FA /* PlaylistExtenderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlaylistExtenderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9DDE2421B1713E900BC54FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B9DDE2431B1713E900BC54FA /* PlaylistExtenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistExtenderTests.swift; sourceTree = "<group>"; };
-		B9DDE24E1B171D9700BC54FA /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Spotify.framework; sourceTree = "<group>"; };
 		B9DDE2501B1726BC00BC54FA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B9DDE2521B1726C600BC54FA /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B9DDE2541B1729F000BC54FA /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Bridging-Header.h"; path = "../Bridging-Header.h"; sourceTree = "<group>"; };
@@ -59,8 +59,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B9DDE24F1B171D9800BC54FA /* Spotify.framework in Frameworks */,
 				B9DDE2531B1726C600BC54FA /* SystemConfiguration.framework in Frameworks */,
+				B9D92FC71B27193D0065FAFC /* Spotify.framework in Frameworks */,
 				B9DDE2511B1726BC00BC54FA /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,9 +141,9 @@
 		B9DDE24D1B171D2F00BC54FA /* Framework */ = {
 			isa = PBXGroup;
 			children = (
+				B9D92FC61B27193D0065FAFC /* Spotify.framework */,
 				B9DDE2521B1726C600BC54FA /* SystemConfiguration.framework */,
 				B9DDE2501B1726BC00BC54FA /* AVFoundation.framework */,
-				B9DDE24E1B171D9700BC54FA /* Spotify.framework */,
 			);
 			name = Framework;
 			path = PlaylistExtender;
@@ -386,6 +386,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/PlaylistExtender",
+					"/Users/laurenbrown/Downloads/ios-sdk-beta-9",
 				);
 				INFOPLIST_FILE = PlaylistExtender/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -402,6 +403,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/PlaylistExtender",
+					"/Users/laurenbrown/Downloads/ios-sdk-beta-9",
 				);
 				INFOPLIST_FILE = PlaylistExtender/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

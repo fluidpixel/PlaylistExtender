@@ -109,7 +109,11 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
     @IBAction func ExtendPlaylistButton(sender: UIButton) {
         
         if currentPlaylist != nil {
-            playlistBuilder.buildPlaylist(currentPlaylist!, session: session)
+            var number : Int? = X.text?.toInt()
+            if number == nil {
+                number = 0
+            }
+            playlistBuilder.buildPlaylist(currentPlaylist!, session: session, sizeToIncreaseBy: number!)
         } else {
             println("Please pick a valid playlist")
         }
