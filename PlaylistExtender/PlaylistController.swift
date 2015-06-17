@@ -101,6 +101,7 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
         if playlistList != nil {
             if playlistList.items.count > 0 {
                 println(playlistList.items[row])
+                playlistBuilder.SetPlaylistList(playlistList)
                 currentPlaylist = playlistList.items[row] as? SPTPartialPlaylist
             }
         }
@@ -113,7 +114,13 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
             if number == nil {
                 number = 0
             }
-            playlistBuilder.buildPlaylist(currentPlaylist!, session: session, sizeToIncreaseBy: number!)
+            playlistBuilder.buildPlaylist(currentPlaylist!, session: session, sizeToIncreaseBy: number!) { result in
+            
+                if result == true {
+                    self.loadPlaylists()
+                    self.Playlist.reloadAllComponents()
+                }
+            }
         } else {
             println("Please pick a valid playlist")
         }

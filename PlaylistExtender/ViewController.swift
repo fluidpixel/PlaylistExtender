@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     let Callback = NSURL(string: "playlistextenderlogin://callback")!
     let kTokenSwapURL = NSURL(string: "http://localhost:1234/swap")!
     let kTokenRefreshURL = NSURL(string: "http://localhost:1234/refresh")!
-    let scope: AnyObject = [SPTAuthStreamingScope, SPTAuthPlaylistModifyPublicScope, SPTAuthPlaylistReadPrivateScope]
+    let scope: AnyObject = [SPTAuthStreamingScope, SPTAuthPlaylistModifyPublicScope, SPTAuthPlaylistModifyPrivateScope, SPTAuthPlaylistReadPrivateScope]
     let response: String = "code"
     
     var session : SPTSession!
@@ -32,17 +32,13 @@ class ViewController: UIViewController {
     func LoginReceived () {
         
          let userDefaults = NSUserDefaults.standardUserDefaults()
-        
         if let sessionObj: AnyObject = NSUserDefaults.standardUserDefaults().objectForKey("session_enabled") {
             
             let sessionDataObj = sessionObj as! NSData
-            
             let session = NSKeyedUnarchiver.unarchiveObjectWithData(sessionDataObj) as! SPTSession
             
             if !session.isValid() {
-                
                 SPTAuth.defaultInstance().renewSession(session, callback: { (error: NSError!, session: SPTSession!) -> Void in
-                    
                     if error == nil {
                         let sessionData = NSKeyedArchiver.archivedDataWithRootObject(session)
                         
@@ -50,8 +46,6 @@ class ViewController: UIViewController {
                         userDefaults.synchronize()
                         
                         self.session = session
-                        
-                        
                         
                     } else {
                         println("error refreshing session")
@@ -61,17 +55,12 @@ class ViewController: UIViewController {
                 println("session is valid")
                 
                 self.session = session
-                
                 self.performSegueWithIdentifier("LoginReceived", sender: session)
             }
-            
             println("YAY SUCCESS")
-            
         } else {
-            
             loginButton.hidden = false
         }
-        
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
