@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -89,21 +89,6 @@
                                     <action selector="ExtendPlaylistButton:" destination="zNL-gB-OoJ" eventType="touchUpInside" id="ArE-hk-hQz"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1du-O2-tD3">
-                                <rect key="frame" x="413" y="550" width="76" height="30"/>
-                                <state key="normal" title="Hello User!">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ob5-u6-qz3">
-                                <rect key="frame" x="497" y="550" width="87" height="30"/>
-                                <state key="normal" title="Not you?">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="ReturnToLogin:" destination="zNL-gB-OoJ" eventType="touchUpInside" id="RQ5-Yn-dFd"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Songs" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WuC-i3-tVX">
                                 <rect key="frame" x="266" y="292" width="70" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
@@ -117,30 +102,23 @@
                             <constraint firstItem="WuC-i3-tVX" firstAttribute="leading" secondItem="t6Z-6S-ms5" secondAttribute="trailing" constant="8" symbolic="YES" id="4DX-Zb-kRP"/>
                             <constraint firstAttribute="centerX" secondItem="Vcd-N4-Nkg" secondAttribute="centerX" id="5ZZ-aX-p73"/>
                             <constraint firstItem="2lc-Gf-nHA" firstAttribute="top" secondItem="k8l-DH-iuk" secondAttribute="bottom" constant="234" id="8SI-pk-CJo"/>
-                            <constraint firstItem="Ob5-u6-qz3" firstAttribute="leading" secondItem="1du-O2-tD3" secondAttribute="trailing" constant="8" id="9PL-td-Y0I"/>
                             <constraint firstItem="2lc-Gf-nHA" firstAttribute="top" secondItem="u4W-c7-qhb" secondAttribute="bottom" constant="8" id="DJK-YY-NMh"/>
                             <constraint firstItem="2lc-Gf-nHA" firstAttribute="centerX" secondItem="t6Z-6S-ms5" secondAttribute="centerX" constant="50" id="DK1-Ek-1Fr"/>
                             <constraint firstItem="t6Z-6S-ms5" firstAttribute="leading" secondItem="tqD-wz-JnS" secondAttribute="trailing" constant="8" symbolic="YES" id="G0l-zR-bBg"/>
                             <constraint firstItem="Vcd-N4-Nkg" firstAttribute="top" secondItem="t6Z-6S-ms5" secondAttribute="bottom" constant="8" symbolic="YES" id="IIv-K9-X6X"/>
                             <constraint firstItem="tqD-wz-JnS" firstAttribute="top" secondItem="2lc-Gf-nHA" secondAttribute="bottom" constant="8" symbolic="YES" id="LDF-lA-8MO"/>
                             <constraint firstAttribute="centerX" secondItem="u4W-c7-qhb" secondAttribute="centerX" id="Ruz-LT-7ps"/>
-                            <constraint firstItem="Ob5-u6-qz3" firstAttribute="trailing" secondItem="Hjy-CT-cIN" secondAttribute="trailingMargin" id="T17-Nf-LFh"/>
                             <constraint firstItem="2lc-Gf-nHA" firstAttribute="leading" secondItem="Hjy-CT-cIN" secondAttribute="leadingMargin" constant="60" id="UFt-mt-IDo"/>
                             <constraint firstItem="t6Z-6S-ms5" firstAttribute="centerY" secondItem="tqD-wz-JnS" secondAttribute="centerY" id="fXo-Ge-huH"/>
-                            <constraint firstItem="3uj-ja-7Gb" firstAttribute="top" secondItem="Ob5-u6-qz3" secondAttribute="bottom" constant="20" id="fi6-j0-5T6"/>
                             <constraint firstItem="t6Z-6S-ms5" firstAttribute="centerY" secondItem="WuC-i3-tVX" secondAttribute="centerY" id="g7Q-BA-mYq"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="1du-O2-tD3" secondAttribute="trailing" constant="95" id="kXg-gL-Bt9"/>
                             <constraint firstItem="WuC-i3-tVX" firstAttribute="top" secondItem="2lc-Gf-nHA" secondAttribute="bottom" constant="8" symbolic="YES" id="n3z-CZ-yj4"/>
-                            <constraint firstItem="1du-O2-tD3" firstAttribute="baseline" secondItem="Ob5-u6-qz3" secondAttribute="baseline" id="rF7-Ec-u7O"/>
                             <constraint firstItem="3uj-ja-7Gb" firstAttribute="top" secondItem="Vcd-N4-Nkg" secondAttribute="bottom" constant="224" id="v0b-oO-yUl"/>
                             <constraint firstItem="t6Z-6S-ms5" firstAttribute="top" secondItem="2lc-Gf-nHA" secondAttribute="bottom" constant="8" symbolic="YES" id="xgS-H3-jD9"/>
-                            <constraint firstItem="3uj-ja-7Gb" firstAttribute="top" secondItem="1du-O2-tD3" secondAttribute="bottom" constant="20" id="zuE-l3-iIH"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="Playlist" destination="u4W-c7-qhb" id="Vki-0Z-Gpy"/>
                         <outlet property="SongAddedLabel" destination="WuC-i3-tVX" id="tMQ-wP-2M2"/>
-                        <outlet property="UserButton" destination="1du-O2-tD3" id="VQe-BV-Dpa"/>
                         <outlet property="X" destination="t6Z-6S-ms5" id="jTf-P2-E3W"/>
                         <outlet property="playlistSlider" destination="2lc-Gf-nHA" id="j5l-PW-Lgr"/>
                     </connections>

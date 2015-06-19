@@ -16,6 +16,10 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
     let playlistBuilder = PlaylistBuilder()
     var currentPlaylist : SPTPartialPlaylist?
     
+    var refreshControl : UIRefreshControl!
+    
+    var playlistIDArray = [String]()
+    
 
     @IBOutlet weak var Playlist: UIPickerView!
     
@@ -28,7 +32,6 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
         super.viewDidLoad()
         
         loadPlaylists()
-        
         
 
         // Do any additional setup after loading the view.
@@ -55,14 +58,19 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
         SPTPlaylistList.playlistsForUserWithSession(session) { (error: NSError!, callback: AnyObject!) -> Void in
             if error == nil {
                 self.playlistList = callback as! SPTPlaylistList
+                self.playlistBuilder.SetPlaylistList(self.playlistList)
+                self.currentPlaylist = self.playlistList.items[0] as? SPTPartialPlaylist
+                
             } else {
                 println("error caught: " + "\(error.description)")
             }
             
+            self.Playlist.reloadAllComponents()
             if self.playlistList.items.count > 1 {
                 
                 self.Playlist.dataSource = self
                 self.Playlist.delegate = self
+                self.Playlist.selectRow(0, inComponent: 0, animated: false)
             }
         }
     }
@@ -109,21 +117,44 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     @IBAction func ExtendPlaylistButton(sender: UIButton) {
         
-        if currentPlaylist != nil {
-            var number : Int? = X.text?.toInt()
-            if number == nil {
-                number = 0
-            }
-            playlistBuilder.buildPlaylist(currentPlaylist!, session: session, sizeToIncreaseBy: number!) { result in
-            
-                if result == true {
-                    self.loadPlaylists()
-                    self.Playlist.reloadAllComponents()
-                }
-            }
-        } else {
-            println("Please pick a valid playlist")
+        let message = "Name Your playlist"
+        
+        var txt : UITextField?
+        
+        let alertView = UIAlertController(title: "Playlist Name", message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        alertView.addTextFieldWithConfigurationHandler { (textField: UITextField!) -> Void in
+            textField.textAlignment = NSTextAlignment.Center
+            txt = textField
         }
+        alertView.addAction(UIAlertAction(title: "Nevermind", style: UIAlertActionStyle.Cancel, handler: nil))
+        alertView.addAction(UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
+            
+            if self.currentPlaylist != nil {
+                var number : Int? = self.X.text?.toInt()
+                if number == nil {
+                    number = 0
+                }
+                self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number!, name : txt?.text) { result in
+                    
+                    if result != nil {
+                        
+                        self.loadPlaylists()
+                        
+                    }else if result == "429" {
+                        self.ShowErrorAlert()
+                    }
+                }
+                
+            } else {
+                println("Please pick a valid playlist")
+            }
+        }))
+        
+        
+        
+        self.presentViewController(alertView, animated: true, completion: nil)
+        
+        
     }
 
     @IBAction func OnSliderDragged(sender: UISlider) {
@@ -132,5 +163,13 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     @IBAction func ReturnToLogin(sender: UIButton) {
         
+    }
+    
+    func ShowErrorAlert() {
+        let alertView = UIAlertController(title: "429 Error", message: "Please try again", preferredStyle: UIAlertControllerStyle.Alert)
+        
+        alertView.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Cancel, handler: nil))
+        
+        self.presentViewController(alertView, animated: true, completion: nil)
     }
 }

@@ -87,8 +87,8 @@ class ViewController: UIViewController {
         
         auth.clientID = clientID
         auth.redirectURL = Callback
-        auth.tokenSwapURL = kTokenSwapURL
-        auth.tokenRefreshURL = kTokenRefreshURL
+        //auth.tokenSwapURL = kTokenSwapURL
+       // auth.tokenRefreshURL = kTokenRefreshURL
         auth.requestedScopes = scope as! [AnyObject]
         
         
