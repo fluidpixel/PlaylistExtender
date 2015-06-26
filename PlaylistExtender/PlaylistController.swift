@@ -20,6 +20,7 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
     
     var playlistIDArray = [String]()
     
+    @IBOutlet weak var CopyOrCreateSwitch: UISwitch!
 
     @IBOutlet weak var Playlist: UIPickerView!
     
@@ -59,7 +60,10 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
             if error == nil {
                 self.playlistList = callback as! SPTPlaylistList
                 self.playlistBuilder.SetPlaylistList(self.playlistList)
-                self.currentPlaylist = self.playlistList.items[0] as? SPTPartialPlaylist
+                if let playlist = self.playlistList.items[0] as? SPTPartialPlaylist {
+                    self.currentPlaylist = playlist
+                }
+                
                 
             } else {
                 println("error caught: " + "\(error.description)")
@@ -126,6 +130,7 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
             textField.textAlignment = NSTextAlignment.Center
             txt = textField
         }
+        
         alertView.addAction(UIAlertAction(title: "Nevermind", style: UIAlertActionStyle.Cancel, handler: nil))
         alertView.addAction(UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
             
@@ -134,7 +139,7 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
                 if number == nil {
                     number = 0
                 }
-                self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number!, name : txt?.text) { result in
+                self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number!, name : txt?.text, extendOrBuild: self.CopyOrCreateSwitch.on) { result in
                     
                     if result != nil {
                         

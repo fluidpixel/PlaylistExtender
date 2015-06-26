@@ -20,8 +20,12 @@ class PlaylistBuilder {
     var PlaylistNewID : String?
     var PlaylistNewName : String?
     var finished : Bool = false
+    var owner_ID = ""
+    var transferTracksOver: Bool = false
     
     var currentTracks = [String]()
+    //change this to one structure to prevent duplicates
+    var trackDictionary : [String : String] = [:] //uris as both keys and values to thin out any duplicates
     
     let clientID: String = "89ce87c720004dcda7261f1c49c15905" //TODO add to defaults
     
@@ -39,15 +43,19 @@ class PlaylistBuilder {
         
     }
     
-    func buildPlaylist(playlist: SPTPartialPlaylist, session: SPTSession, sizeToIncreaseBy: Int, name: String?, completionHandler: (result: String?) -> () ) {
+    func buildPlaylist(playlist: SPTPartialPlaylist, session: SPTSession, sizeToIncreaseBy: Int, name: String?, extendOrBuild: Bool, completionHandler: (result: String?) -> () ) {
         resetVARS()
         currentSession = session
         PlaylistName = playlist.name
         PlaylistNewName = name
         println(playlist.playableUri)
         
+        transferTracksOver = extendOrBuild
+        
         let array = split("\(playlist.uri)") {$0 == ":"}
         playlist_ID = array[(array.count-1)]
+        
+        owner_ID = array[2]
             
         FindArtists() { result in
             
@@ -57,7 +65,7 @@ class PlaylistBuilder {
                     
                     if result == true {
                         //create new playlist and add songs to it, along with current songs on the playlist
-                        
+                        //self.tracksToAdd = Array(self.trackDictionary.values)
                         self.CreateNewPlaylist(sizeToIncreaseBy) { result in
                             
                             if result == true {
@@ -66,13 +74,10 @@ class PlaylistBuilder {
                                 completionHandler(result: "429")
                             }
                         }
-                       
                     }
                 }
             }
         }
-        
-        
     }
     
     
@@ -129,11 +134,16 @@ class PlaylistBuilder {
                                 self.AddTracks(numbertoAdd) { result in
                                  println("trace - add tracks called")
                                     if result == true {
-                                        self.CopyOverExistingTracks(0) { result in
-                                            if result == true {
-                                                completionHandler(result: true)
-                                                println("trace - finished copying over")
+                                        if self.transferTracksOver == true {
+                                            self.CopyOverExistingTracks(0) { result in
+                                                if result == true {
+                                                    completionHandler(result: true)
+                                                    println("trace - finished copying over")
+                                                }
                                             }
+                                        }else {
+                                            println("No need to copy over")
+                                            completionHandler(result: true)
                                         }
                                          println("trace - callback received")
                                         
@@ -163,13 +173,22 @@ class PlaylistBuilder {
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
         shuffle(tracksToAdd)
+        println(tracksToAdd)
+        
+        println(trackDictionary)
         
         var newArray = [String]()
         
         for var i = 0; i < numberOfTracks && i < tracksToAdd.count; i++ {
             
-            newArray.append(tracksToAdd[i])
-           
+            if trackDictionary[tracksToAdd[i]] != nil {
+                tracksToAdd.removeAtIndex(i)
+                i--
+            }else {
+                
+                trackDictionary[tracksToAdd[i]] = tracksToAdd[i]
+                newArray.append(tracksToAdd[i])
+            }
         }
         
         let dict = ["uris" : newArray]
@@ -203,7 +222,7 @@ class PlaylistBuilder {
                     
                     if statusCode != 429 {
                     if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
-                        println(result)
+                        //println(result)
                         
                         completionHandler(result: true)
                     }
@@ -320,7 +339,10 @@ class PlaylistBuilder {
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
         let user_ID: String = currentSession!.canonicalUsername
-        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID!)/tracks")
+        
+        //need a catch for when the playlist does not belong to the user
+        
+        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(owner_ID)/playlists/\(playlist_ID!)/tracks")
         
         dispatch_async(dispatch_get_global_queue(Int(QOS_CLASS_USER_INTERACTIVE.value), 0)) { () -> Void in
                 
@@ -420,7 +442,7 @@ class PlaylistBuilder {
                     if (error == nil) {
                         // Success
                         if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
-                            println("URL Session Task Succeeded: HTTP \(statusCode)")
+                            //println("URL Session Task Succeeded: HTTP \(statusCode)")
                             if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
                                 //println(result)
                                 
@@ -455,6 +477,7 @@ class PlaylistBuilder {
             for all in tracks {
                 
                 tracksToAdd.append(all.valueForKey("uri") as! String)
+                
             }
         }
     }
@@ -471,6 +494,7 @@ class PlaylistBuilder {
                     if let track: NSDictionary = values["track"] as? NSDictionary {
                         
                         currentTracks.append(track.valueForKey("uri") as! String)
+                        trackDictionary[track.valueForKey("uri") as! String] = (track.valueForKey("uri") as! String)
                         
                         if let artists = track["artists"] as? NSArray {
                             
