@@ -8,52 +8,32 @@
 
 import UIKit
 
-class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class PlaylistController: UITableViewController, UITableViewDataSource, UITableViewDelegate {
     
     var session : SPTSession!
     var playlistList : SPTPlaylistList!
     
     let playlistBuilder = PlaylistBuilder()
     var currentPlaylist : SPTPartialPlaylist?
-    
-    var refreshControl : UIRefreshControl!
-    
+	
     var playlistIDArray = [String]()
     
-    @IBOutlet weak var CopyOrCreateSwitch: UISwitch!
+	@IBOutlet weak var amountSlider: UISlider!
+//    @IBOutlet weak var CopyOrCreateSwitch: UISwitch!
 
-    @IBOutlet weak var Playlist: UIPickerView!
-    
-    @IBOutlet weak var X: UILabel!
-    @IBOutlet weak var SongAddedLabel: UILabel!
-    @IBOutlet weak var playlistSlider: UISlider!
-    
-    @IBOutlet weak var UserButton: UIButton!
+//    @IBOutlet weak var Playlist: UIPickerView!
+	
+//    @IBOutlet weak var X: UILabel!
+//    @IBOutlet weak var SongAddedLabel: UILabel!
+//    @IBOutlet weak var playlistSlider: UISlider!
+	
+    @IBOutlet weak var extendPlaylistButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadPlaylists()
-        
+	}
 
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     func loadPlaylists() {
         
         SPTPlaylistList.playlistsForUserWithSession(session) { (error: NSError!, callback: AnyObject!) -> Void in
@@ -64,50 +44,38 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
                     self.currentPlaylist = playlist
                 }
                 
-                
+                self.tableView.reloadData()
+			
             } else {
                 println("error caught: " + "\(error.description)")
             }
             
-            self.Playlist.reloadAllComponents()
+//            self.Playlist.reloadAllComponents()
             if self.playlistList.items.count > 1 {
                 
-                self.Playlist.dataSource = self
-                self.Playlist.delegate = self
-                self.Playlist.selectRow(0, inComponent: 0, animated: false)
+//                self.Playlist.dataSource = self
+//                self.Playlist.delegate = self
+//                self.Playlist.selectRow(0, inComponent: 0, animated: false)
             }
         }
     }
-    
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int{
-        return 1
-    }
-    
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        
-        if playlistList != nil {
-            if playlistList.items.count > 0{
-                return playlistList.items.count
-            }
-        }
-        
-        return 0
-    }
-    
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        
-        if playlistList != nil {
-            if playlistList.items.count > row {
-                //
-                if let item: String? =  playlistList.items?[row].name {
-                    return item
-                }
-                
-            }
-        }
-        return "No Playlists available"
-    }
-    
+	
+	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		if playlistList != nil {
+			return playlistList.items.count
+		} else {
+			return 0
+		}
+	}
+	
+	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+		
+		let cell = self.tableView.dequeueReusableCellWithIdentifier("playlist cell") as! UITableViewCell
+		cell.textLabel?.text = playlistList.items?[indexPath.row].name
+		cell.detailTextLabel?.text = "\(playlistList.items?[indexPath.row].trackCount)"
+		return cell
+	}
+	
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         if playlistList != nil {
@@ -135,11 +103,9 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
         alertView.addAction(UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
             
             if self.currentPlaylist != nil {
-                var number : Int? = self.X.text?.toInt()
-                if number == nil {
-                    number = 0
-                }
-                self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number!, name : txt?.text, extendOrBuild: self.CopyOrCreateSwitch.on) { result in
+                var number = Int(self.amountSlider.value)
+			
+                self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number, name : txt?.text, extendOrBuild: false) { result in
                     
                     if result != nil {
                         
@@ -163,7 +129,7 @@ class PlaylistController: UIViewController, UIPickerViewDataSource, UIPickerView
     }
 
     @IBAction func OnSliderDragged(sender: UISlider) {
-        X.text = "\(Int(sender.value))"
+		extendPlaylistButton.setTitle("Extend by \(Int(sender.value)) Playlists", forState: .Normal)
     }
     
     @IBAction func ReturnToLogin(sender: UIButton) {
