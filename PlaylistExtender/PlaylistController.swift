@@ -72,7 +72,9 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 		
 		let cell = self.tableView.dequeueReusableCellWithIdentifier("playlist cell") as! UITableViewCell
 		cell.textLabel?.text = playlistList.items?[indexPath.row].name
-		cell.detailTextLabel?.text = "\(playlistList.items?[indexPath.row].trackCount)"
+		if let trackCount = playlistList.items?[indexPath.row].trackCount {
+			cell.detailTextLabel?.text = "\(trackCount)"
+		}
 		return cell
 	}
 	

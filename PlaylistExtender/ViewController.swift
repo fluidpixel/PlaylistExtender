@@ -65,12 +65,19 @@ class ViewController: UIViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         //any pre-segue stuff goes in here
-        if let pc = segue.destinationViewController as? PlaylistController {
-            if (sender as! SPTSession).isValid() {
-                pc.session = (sender as! SPTSession)
-            }
-        }
-        
+	if let navigation = segue.destinationViewController as? UINavigationController {
+		if let pc = navigation.viewControllers.first as? PlaylistController {
+			if (sender as! SPTSession).isValid() {
+				pc.session = (sender as! SPTSession)
+			}
+		}
+	}
+//        if let pc = segue.destinationViewController as? PlaylistController {
+//            if (sender as! SPTSession).isValid() {
+//                pc.session = (sender as! SPTSession)
+//            }
+//        }
+	
     }
 
     @IBAction func LoginSpotify(sender: UIButton) {
