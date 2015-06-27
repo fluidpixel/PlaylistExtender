@@ -76,20 +76,14 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 		return cell
 	}
 	
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        
-        if playlistList != nil {
-            if playlistList.items.count > 0 {
-                println(playlistList.items[row])
-                playlistBuilder.SetPlaylistList(playlistList)
-                currentPlaylist = playlistList.items[row] as? SPTPartialPlaylist
-            }
-        }
-    }
-    
+	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		playlistBuilder.SetPlaylistList(playlistList)
+		currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
+	}
+	
     @IBAction func ExtendPlaylistButton(sender: UIButton) {
         
-        let message = "Name Your playlist"
+        let message = "Name Your new playlist"
         
         var txt : UITextField?
         
@@ -99,41 +93,46 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
             txt = textField
         }
         
-        alertView.addAction(UIAlertAction(title: "Nevermind", style: UIAlertActionStyle.Cancel, handler: nil))
-        alertView.addAction(UIAlertAction(title: "Confirm", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
-            
-            if self.currentPlaylist != nil {
-                var number = Int(self.amountSlider.value)
-			
-                self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number, name : txt?.text, extendOrBuild: false) { result in
-                    
-                    if result != nil {
-                        
-                        self.loadPlaylists()
-                        
-                    }else if result == "429" {
-                        self.ShowErrorAlert()
-                    }
-                }
-                
-            } else {
-                println("Please pick a valid playlist")
-            }
+        alertView.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+		alertView.addAction(UIAlertAction(title: "Copy Existing Tracks", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
+			self.newPlaylist(txt!.text, extend: true)
+		}))
+
+        alertView.addAction(UIAlertAction(title: "Brand New Playlist", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
+		self.newPlaylist(txt!.text, extend: false)
         }))
-        
-        
-        
+	
         self.presentViewController(alertView, animated: true, completion: nil)
-        
-        
+	
     }
 
+	func newPlaylist (name: String, extend:Bool) {
+		
+		if self.currentPlaylist != nil {
+			var number = Int(self.amountSlider.value)
+			
+			self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: false) { result in
+				
+				if result != nil {
+					
+					self.loadPlaylists()
+					
+				}else if result == "429" {
+					self.ShowErrorAlert()
+				}
+			}
+			
+		} else {
+			println("Please pick a valid playlist")
+		}
+	}
+	
     @IBAction func OnSliderDragged(sender: UISlider) {
 		extendPlaylistButton.setTitle("Extend by \(Int(sender.value)) Playlists", forState: .Normal)
     }
-    
+	
     @IBAction func ReturnToLogin(sender: UIButton) {
-        
+	
     }
     
     func ShowErrorAlert() {

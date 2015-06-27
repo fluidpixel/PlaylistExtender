@@ -159,20 +159,23 @@
                             <rect key="frame" x="0.0" y="66" width="600" height="96"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="3D6-ad-dEH">
-                                    <rect key="frame" x="14" y="8" width="572" height="31"/>
-                                    <connections>
-                                        <action selector="OnSliderDragged:" destination="EFF-6p-UZo" eventType="valueChanged" id="30M-ux-8Nh"/>
-                                        <action selector="OnSliderDragged:" destination="zNL-gB-OoJ" eventType="valueChanged" id="YED-Ue-kSa"/>
-                                    </connections>
-                                </slider>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KmY-x2-yPE">
                                     <rect key="frame" x="216" y="46" width="167" height="34"/>
                                     <state key="normal" title="EXTEND by 0 Tracks">
                                         <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <connections>
+                                        <action selector="ExtendPlaylistButton:" destination="EFF-6p-UZo" eventType="touchUpInside" id="owJ-pm-NCY"/>
+                                    </connections>
                                 </button>
+                                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minValue="1" maxValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="3D6-ad-dEH">
+                                    <rect key="frame" x="14" y="8" width="572" height="31"/>
+                                    <connections>
+                                        <action selector="OnSliderDragged:" destination="EFF-6p-UZo" eventType="valueChanged" id="30M-ux-8Nh"/>
+                                        <action selector="OnSliderDragged:" destination="zNL-gB-OoJ" eventType="valueChanged" id="YED-Ue-kSa"/>
+                                    </connections>
+                                </slider>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <constraints>
