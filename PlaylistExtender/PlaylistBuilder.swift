@@ -10,29 +10,42 @@ import Foundation
 
 
 class PlaylistBuilder {
-    
+    //MARK: VARIABLES
     var currentSession: SPTSession?
     var PlaylistName: String?
     var playlist_ID : String?
-    var artist_Dictionary: [String : String] = [:]
-    var totalTracksInPlaylist : Int? = 0
-    var PlaylistList : SPTPlaylistList?
     var PlaylistNewID : String?
     var PlaylistNewName : String?
+    
+    var artist_Dictionary: [String : String] = [:]
+    var currentTracks = [String]()
+    //var trackMap: [String : [String]] = [:]
+    //change this to one structure to prevent duplicates
+    var trackDictionary : [String : String] = [:] //uris as both keys and values to thin out any duplicates
+    var tracksToAdd = [[String]]()
+    var duplicateCounter: [String : Int] = [:]
+    
+    var instances : Int = 0
+    var totalTracksInPlaylist : Int? = 0
+    var PlaylistList : SPTPlaylistList?
+
     var finished : Bool = false
     var owner_ID = ""
     var transferTracksOver: Bool = false
     
-    var currentTracks = [String]()
-    //change this to one structure to prevent duplicates
-    var trackDictionary : [String : String] = [:] //uris as both keys and values to thin out any duplicates
-    
+    var filterExplitives: Bool = false
+    var IsExplicit = false
+    var resultingArray = [[String]]()
+
     let clientID: String = "89ce87c720004dcda7261f1c49c15905" //TODO add to defaults
-    
-    var tracksToAdd = [String]()
-    
+
     func SetPlaylistList(list: SPTPlaylistList){
         PlaylistList = list
+        resultingArray = [[String]]()
+    }
+    
+    func SetupSession(thisSession : SPTSession) {
+        currentSession = thisSession
     }
     
     func resetVARS(){
@@ -40,9 +53,10 @@ class PlaylistBuilder {
         finished = false
         PlaylistNewName = nil
         PlaylistNewID = nil
-        
+        instances = 0
     }
     
+    //MARK: FUNCTIONS
     func buildPlaylist(playlist: SPTPartialPlaylist, session: SPTSession, sizeToIncreaseBy: Int, name: String?, extendOrBuild: Bool, completionHandler: (result: String?) -> () ) {
         resetVARS()
         currentSession = session
@@ -165,7 +179,7 @@ class PlaylistBuilder {
         })
         task.resume()
     }
-    
+    //TODO - Add functionality to add more than 100 tracks
     func AddTracks(numberOfTracks: Int, completionHandler: (result: Bool?) -> () ) {
         
         // add tracks to the new playlist here
@@ -173,24 +187,48 @@ class PlaylistBuilder {
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
         shuffle(tracksToAdd)
-        println(tracksToAdd)
+        //println(tracksToAdd)
         
-        println(trackDictionary)
+        //println(trackDictionary)
         
+        //have a normal shuffle then pick X songs by each artist up to Y size of request
+        var ratioCounter: [String: Int] = [:]
         var newArray = [String]()
         
-        for var i = 0; i < numberOfTracks && i < tracksToAdd.count; i++ {
+        for all in tracksToAdd {
             
-            if trackDictionary[tracksToAdd[i]] != nil {
-                tracksToAdd.removeAtIndex(i)
-                i--
-            }else {
+            for var i = 1; i < all.count; i++ {
                 
-                trackDictionary[tracksToAdd[i]] = tracksToAdd[i]
-                newArray.append(tracksToAdd[i])
+                //debug stuff
+                var ratio: Double = 1
+                
+                if duplicateCounter[all[i]] != nil {
+                    
+                    println(Double(duplicateCounter[all[i]]!))
+                    ratio = (Double(duplicateCounter[all[i]]!) / Double(instances))*100.0
+                }
+                    if (ratioCounter[all[i]] == nil) || Double(ratioCounter[all[i]]!) <= (ratio) {
+                        let temp = all[0]
+                        if trackDictionary[temp] != nil {
+                            
+                        }else {
+                            if ratioCounter[all[i]] == nil{
+                                ratioCounter[all[i]] = 0
+                            }
+                            ratioCounter[all[i]] = ratioCounter[all[i]]! + 1
+                            trackDictionary[temp] = temp
+                            if newArray.count <= numberOfTracks {
+                                newArray.append(temp)
+                            }
+                        }
+                    }
+                
             }
         }
-        
+
+        if numberOfTracks > 100 {
+            //split request into parts
+        }
         let dict = ["uris" : newArray]
         
         var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
@@ -200,13 +238,9 @@ class PlaylistBuilder {
         let request = NSMutableURLRequest(URL: URL!)
         request.HTTPMethod = "POST"
         
-        //println(URL!)
-        
         // JSON Body
 
         let bodyObject = dict
-        
-        //println(bodyObject)
         
         request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.allZeros, error: nil)
         
@@ -218,11 +252,11 @@ class PlaylistBuilder {
             if (error == nil) {
                 // Success
                 if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
-                    //println("URL Session Task Succeeded: HTTP \(statusCode)")
+                    println("URL Session Task Succeeded: HTTP \(statusCode)")
                     
                     if statusCode != 429 {
                     if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
-                        //println(result)
+                        println(result)
                         
                         completionHandler(result: true)
                     }
@@ -250,7 +284,6 @@ class PlaylistBuilder {
                 let add = offset + 100
                  offsetted = Array(currentTracks[offset..<add])
             } else {
-                
                 offsetted = Array(currentTracks[offset..<currentTracks.count])
             }
 
@@ -304,12 +337,6 @@ class PlaylistBuilder {
                                 self.InCaseof429()
                                  completionHandler(result: false)
                             }
-                            
-                            
-                            //var err : NSError?
-                            //if let jsonObject : NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: &err) as? NSDictionary {
-                            
-                            //}
                         }
                     }
                 }
@@ -329,10 +356,7 @@ class PlaylistBuilder {
         return list
     }
     
-    
     private func FindArtists(offset : Int = 0, completionHandler: (result: Bool?) -> () ){
-        
-        //YES IT WORKS
         
         var currentOffset = offset
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -465,9 +489,106 @@ class PlaylistBuilder {
             
                 })
                 task.resume()
-
             }
         }
+    }
+
+        //MARK: Functions used to display tracks
+    func GrabTracksFromPlaylist(offset : Int, tracksInPlaylist : Int, playlist : SPTPartialPlaylist, completionHandler: (result: [[String]]?) -> () ) {
+        
+        let array = split("\(playlist.uri)") {$0 == ":"}
+        let playlist_ID = array[(array.count-1)]
+        
+        let owner_ID = array[2]
+        
+        
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
+        
+        let user_ID: String  = currentSession!.canonicalUsername
+        
+        println(playlist_ID)
+        
+        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(owner_ID)/playlists/\(playlist_ID)/tracks")
+        
+            let URLParams = [
+                "offset": "\(offset)",
+            ]
+            
+            URL = self.NSURLByAppendingQueryParameters(URL, queryParameters: URLParams)
+            
+            let request = NSMutableURLRequest(URL: URL!)
+            
+            request.HTTPMethod = "GET"
+        
+            println("\(self.currentSession!.tokenType) \n \(self.currentSession!.accessToken)")
+            
+            request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
+            
+            let task = session.dataTaskWithRequest(request, completionHandler: { (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void in
+                if error == nil {
+                    
+                    if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
+                        
+                        println("URL Session Task Succeeded: HTTP \(statusCode)")
+                        
+                        if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
+                            //println(result)
+                            
+                            //add results into array
+                            
+                            var err : NSError?
+                            if let jsonObject : NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: &err) as? NSDictionary {
+                                
+                                if let tracks: NSArray = jsonObject.valueForKey("items") as? NSArray {
+                                    
+                                    //sort results into a list of names, artists and length(?)
+                                    
+                                    for all in tracks {
+                                        
+                                        var tempArray = [String]()
+                                        
+                                        if let individual: NSDictionary = all.valueForKey("track") as? NSDictionary {
+                                        
+                                            tempArray.append(individual.valueForKey("name") as! String)
+                                            
+                                            tempArray.append(String(format: "%5.2f", (((individual.valueForKey("duration_ms"))!.doubleValue) / 60000.0)))
+                                            
+                                            if let artists = individual.valueForKey("artists") as? NSArray {
+
+                                                for art in artists {
+                                                    
+                                                     tempArray.append(art.valueForKey("name") as! String)
+                                                }
+                                            }
+                                            
+                                            self.resultingArray.append(tempArray)
+                                        }
+                                    }
+                                    let offset2 = offset + 100
+                                    if offset2 < tracksInPlaylist {
+                                        
+                                        
+                                        self.GrabTracksFromPlaylist(offset2, tracksInPlaylist: tracksInPlaylist, playlist: playlist, completionHandler: { (result) -> () in
+                                            
+                                            if result != nil && result!.count > 0 {
+                                                completionHandler(result: result)
+                                            }
+                                        })
+                                        
+                                    } else {
+                                        completionHandler(result: self.resultingArray)
+                                    }
+                                    
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            task.resume()
     }
 
     func SortResultsIntoArray(object : NSDictionary) {
@@ -476,8 +597,28 @@ class PlaylistBuilder {
             
             for all in tracks {
                 
-                tracksToAdd.append(all.valueForKey("uri") as! String)
-                
+                if let artists = all.valueForKey("artists") as? NSArray {
+                    var counter = 1
+                    for art in artists {
+                        var index = 0
+                        if (tracksToAdd.count-1) > 0 {
+                            index = tracksToAdd.count-1
+                        }else {
+                            index = 0
+                        }
+                        
+                        if tracksToAdd.count == 0 {
+                            tracksToAdd.append([all.valueForKey("uri") as! String, art.valueForKey("id") as! String])
+                            
+                        } else if tracksToAdd[index][0] != all.valueForKey("id") as! String {
+                            tracksToAdd.append([all.valueForKey("uri") as! String, art.valueForKey("id") as! String])
+                            
+                        } else {
+                            tracksToAdd[tracksToAdd.count-1].append(art.valueForKey("id") as! String)
+                        }
+                        counter++
+                    }
+                }
             }
         }
     }
@@ -494,6 +635,9 @@ class PlaylistBuilder {
                     if let track: NSDictionary = values["track"] as? NSDictionary {
                         
                         currentTracks.append(track.valueForKey("uri") as! String)
+                        
+                        IsExplicit = track.valueForKey("explicit") as! Bool
+                        
                         trackDictionary[track.valueForKey("uri") as! String] = (track.valueForKey("uri") as! String)
                         
                         if let artists = track["artists"] as? NSArray {
@@ -502,7 +646,18 @@ class PlaylistBuilder {
                                 
                                 if i.valueForKey("id") as? String != nil {
                                     
+                                    //if !IsExplicit || !filterExplitives{
+                                    instances++
                                     artist_Dictionary[i.valueForKey("name") as! String] = i.valueForKey("id") as? String
+                                    //trackMap[currentTracks[currentTracks.count-1]] = trackMap[currentTracks[currentTracks.count-1]]!.append(i.valueForKey("name") as? String)
+                                    //add count to dupes if an artist dupe
+                                    if duplicateCounter[i.valueForKey("id") as! String] == nil {
+                                        duplicateCounter[i.valueForKey("id") as! String] = 1
+                                    } else {
+                                        let counter = duplicateCounter[i.valueForKey("id") as! String]
+                                        duplicateCounter[i.valueForKey("id") as! String] = (counter! + 1)
+                                    }
+                                    //}
                                 }
                             }
                         }
@@ -546,7 +701,7 @@ class PlaylistBuilder {
         request.HTTPMethod = "DELETE"
         
         request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
-
+        
         let task = session.dataTaskWithRequest(request, completionHandler: { (data : NSData!, response : NSURLResponse!, error : NSError!) -> Void in
             if (error == nil) {
                 // Success
@@ -563,9 +718,6 @@ class PlaylistBuilder {
         task.resume()
         
     }
-    
-    
-
 
 
 

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B9D92FC71B27193D0065FAFC /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D92FC61B27193D0065FAFC /* Spotify.framework */; };
+		B9DBDF9C1B4571610015477A /* PlaylistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DBDF9B1B4571610015477A /* PlaylistTableViewController.swift */; };
 		B9DDE1A91B1C6FC0008341BE /* PlaylistBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE1A81B1C6FC0008341BE /* PlaylistBuilder.swift */; };
 		B9DDE22E1B1713E900BC54FA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE22D1B1713E900BC54FA /* AppDelegate.swift */; };
 		B9DDE2301B1713E900BC54FA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DDE22F1B1713E900BC54FA /* ViewController.swift */; };
@@ -34,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		B9D92FC61B27193D0065FAFC /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Spotify.framework; sourceTree = "<group>"; };
+		B9DBDF9B1B4571610015477A /* PlaylistTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewController.swift; sourceTree = "<group>"; };
 		B9DDE1A81B1C6FC0008341BE /* PlaylistBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistBuilder.swift; sourceTree = "<group>"; };
 		B9DDE2281B1713E900BC54FA /* PlaylistExtender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaylistExtender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9DDE22C1B1713E900BC54FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				B9DDE22F1B1713E900BC54FA /* ViewController.swift */,
 				B9DDE2581B18A6D300BC54FA /* PlaylistController.swift */,
 				B9DDE1A81B1C6FC0008341BE /* PlaylistBuilder.swift */,
+				B9DBDF9B1B4571610015477A /* PlaylistTableViewController.swift */,
 				B9DDE2311B1713E900BC54FA /* Main.storyboard */,
 				B9DDE22B1B1713E900BC54FA /* Supporting Files */,
 			);
@@ -251,6 +254,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9DDE2561B17477300BC54FA /* Setup.m in Sources */,
+				B9DBDF9C1B4571610015477A /* PlaylistTableViewController.swift in Sources */,
 				B9DDE2591B18A6D300BC54FA /* PlaylistController.swift in Sources */,
 				B9DDE2301B1713E900BC54FA /* ViewController.swift in Sources */,
 				B9DDE22E1B1713E900BC54FA /* AppDelegate.swift in Sources */,

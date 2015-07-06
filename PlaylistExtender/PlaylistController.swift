@@ -19,14 +19,7 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
     var playlistIDArray = [String]()
     
 	@IBOutlet weak var amountSlider: UISlider!
-//    @IBOutlet weak var CopyOrCreateSwitch: UISwitch!
 
-//    @IBOutlet weak var Playlist: UIPickerView!
-	
-//    @IBOutlet weak var X: UILabel!
-//    @IBOutlet weak var SongAddedLabel: UILabel!
-//    @IBOutlet weak var playlistSlider: UISlider!
-	
     @IBOutlet weak var extendPlaylistButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,14 +42,6 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
             } else {
                 println("error caught: " + "\(error.description)")
             }
-            
-//            self.Playlist.reloadAllComponents()
-            if self.playlistList.items.count > 1 {
-                
-//                self.Playlist.dataSource = self
-//                self.Playlist.delegate = self
-//                self.Playlist.selectRow(0, inComponent: 0, animated: false)
-            }
         }
     }
 	
@@ -67,7 +52,13 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 			return 0
 		}
 	}
-	
+    
+    override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+        
+        currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
+        performSegueWithIdentifier("SongsInPlaylist", sender: self)
+    }
+
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		
 		let cell = self.tableView.dequeueReusableCellWithIdentifier("playlist cell") as! UITableViewCell
@@ -81,7 +72,20 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		playlistBuilder.SetPlaylistList(playlistList)
 		currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
+        
+        
 	}
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        
+            if var viewController = segue.destinationViewController as? PlaylistTableViewController {
+            
+                viewController.playlist = currentPlaylist
+                viewController.Currentsession = session
+            }
+        
+    }
 	
     @IBAction func ExtendPlaylistButton(sender: UIButton) {
         
@@ -105,7 +109,6 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
         }))
 	
         self.presentViewController(alertView, animated: true, completion: nil)
-	
     }
 
 	func newPlaylist (name: String, extend:Bool) {
