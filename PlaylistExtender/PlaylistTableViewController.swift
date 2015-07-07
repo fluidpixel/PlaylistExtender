@@ -18,24 +18,25 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
     
     override func viewDidLoad() {
         
+        
+        dispatch_async(dispatch_get_main_queue(),{
+            self.title = self.playlist?.name
+        })
+        
         builder.SetupSession(Currentsession!)
-        self.tableView.reloadData()
+       
         builder.GrabTracksFromPlaylist(0, tracksInPlaylist: Int(playlist!.trackCount), playlist: playlist!) { (result) -> () in
-            
             if result != nil && result!.count != 0 {
                 self.list = result!
-                self.tableView.reloadData()
+                dispatch_async(dispatch_get_main_queue(),{
+                    self.tableView.reloadData()
+                })
             }
         }
-        
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if playlist != nil {
-            return Int(playlist!.trackCount)
-        } else {
-            return 0
-        }
+            return list.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -54,6 +55,7 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
             
             cell.detailTextLabel?.text = " \(artistText) - \(list[indexPath.row][1])"
         }
+        
         return cell
     }
     

@@ -87,11 +87,7 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
             }
         
     }
-	
-	override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
-		selectedPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
-	}
-	
+		
     @IBAction func ExtendPlaylistButton(sender: UIButton) {
         
         let message = "Name Your new playlist"
@@ -152,10 +148,4 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
         
         self.presentViewController(alertView, animated: true, completion: nil)
     }
-	
-	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-		if let vc = segue.destinationViewController as? PlaylistDetailTableViewController {
-			vc.playlist = selectedPlaylist
-		}
-	}
 }
