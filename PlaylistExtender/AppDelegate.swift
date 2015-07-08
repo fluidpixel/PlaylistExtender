@@ -14,10 +14,24 @@ let setup = Setup()
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-     let Callback: NSURL = NSURL(string: "playlistextender-login://callback")!
-
+    let Callback: NSURL = NSURL(string: "playlistextenderlogin://callback")!
+    let clientID: String = "89ce87c720004dcda7261f1c49c15905"
+    let clientSecret: String = "5e0e325e2b1f4dc093bfc0c2fdaefc8d"
+    let kTokenSwapURL = NSURL(string: "http://localhost:1234/swap")!
+    let kTokenRefreshURL = NSURL(string: "http://localhost:1234/refresh")!
+    let scope: [AnyObject] = [SPTAuthStreamingScope, SPTAuthPlaylistModifyPublicScope, SPTAuthPlaylistModifyPrivateScope, SPTAuthPlaylistReadPrivateScope]
+    let response: String = "code"
+    let kSessionUserDefaultsKey  = "SpotifySession"
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        let auth = SPTAuth.defaultInstance()
+        auth.clientID = clientID
+        auth.requestedScopes = scope
+        auth.redirectURL = Callback
+//        auth.tokenSwapURL = kTokenSwapURL
+//        auth.tokenRefreshURL = kTokenRefreshURL
+        auth.sessionUserDefaultsKey = kSessionUserDefaultsKey
         
         return true
     }

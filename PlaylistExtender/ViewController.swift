@@ -8,58 +8,47 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, SPTAuthViewDelegate{
     
-    let clientID: String = "89ce87c720004dcda7261f1c49c15905"
-    let clientSecret: String = "5e0e325e2b1f4dc093bfc0c2fdaefc8d"
-    let Callback = NSURL(string: "playlistextenderlogin://callback")!
-    let kTokenSwapURL = NSURL(string: "http://localhost:1234/swap")!
-    let kTokenRefreshURL = NSURL(string: "http://localhost:1234/refresh")!
-    let scope: AnyObject = [SPTAuthStreamingScope, SPTAuthPlaylistModifyPublicScope, SPTAuthPlaylistModifyPrivateScope, SPTAuthPlaylistReadPrivateScope]
     let response: String = "code"
     
     var session : SPTSession!
-
+    var authViewController: SPTAuthViewController = SPTAuthViewController.authenticationViewController()
+    
     @IBOutlet weak var loginButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "LoginReceived", name: "LoginSuccessful", object: nil)
-
+        loginButton.hidden = true
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "loginReceived", name: "LoginSuccessful", object: nil)
     }
     
-    func LoginReceived () {
+
+    override func viewDidAppear(animated: Bool) {
+        loginReceived()
+    }
+    
+    func loginReceived () {
         
-         let userDefaults = NSUserDefaults.standardUserDefaults()
-        if let sessionObj: AnyObject = NSUserDefaults.standardUserDefaults().objectForKey("session_enabled") {
-            
-            let sessionDataObj = sessionObj as! NSData
-            let session = NSKeyedUnarchiver.unarchiveObjectWithData(sessionDataObj) as! SPTSession
-            
+        let auth = SPTAuth.defaultInstance()
+        
+        if let session = auth.session {
             if !session.isValid() {
                 SPTAuth.defaultInstance().renewSession(session, callback: { (error: NSError!, session: SPTSession!) -> Void in
-                    if error == nil {
-                        let sessionData = NSKeyedArchiver.archivedDataWithRootObject(session)
-                        
-                        userDefaults.setObject(sessionData, forKey: "session_enabled")
-                        userDefaults.synchronize()
-                        
-                        self.session = session
-                        
-                    } else {
-                        println("error refreshing session")
+                    auth.session = session
+                    if error != nil {
+                        println("error refreshing session: \(error)")
+                        self.loginButton.hidden = false
                     }
                 })
             } else {
                 println("session is valid")
                 
-                self.session = session
+                auth.session = session
                 self.performSegueWithIdentifier("LoginReceived", sender: session)
             }
-            println("YAY SUCCESS")
         } else {
-            loginButton.hidden = false
+            self.loginButton.hidden = false
         }
     }
     
@@ -72,33 +61,33 @@ class ViewController: UIViewController {
 			}
 		}
 	}
-//        if let pc = segue.destinationViewController as? PlaylistController {
-//            if (sender as! SPTSession).isValid() {
-//                pc.session = (sender as! SPTSession)
-//            }
-//        }
 	
     }
 
     @IBAction func LoginSpotify(sender: UIButton) {
         
-        //let url = SPTAuth.loginURLForClientId(clientID, withRedirectURL: Callback, scopes: scope as! [AnyObject], responseType: response)
-        let auth = SPTAuth.defaultInstance()
+        authViewController.delegate = self
+        authViewController.modalPresentationStyle = UIModalPresentationStyle.CurrentContext
+        authViewController.modalTransitionStyle = UIModalTransitionStyle.CrossDissolve
         
+        self.modalPresentationStyle = UIModalPresentationStyle.CurrentContext
+        self.definesPresentationContext = true
+        self .presentViewController(authViewController, animated: true, completion: nil)
         
-        
-        auth.clientID = clientID
-        auth.redirectURL = Callback
-        //auth.tokenSwapURL = kTokenSwapURL
-       // auth.tokenRefreshURL = kTokenRefreshURL
-        auth.requestedScopes = scope as! [AnyObject]
-        
-        
-        let url = auth.loginURL
-        
-        UIApplication.sharedApplication().openURL(url)
-
     }
 
+    func authenticationViewController(authenticationViewController: SPTAuthViewController!, didFailToLogin error: NSError!) {
+        println("login failed: \(error)")
+    }
+    
+    func authenticationViewController(authenticationViewController: SPTAuthViewController!, didLoginWithSession session: SPTSession!) {
+        println("login success")
+        SPTAuth.defaultInstance().session = session
+        self.performSegueWithIdentifier("LoginReceived", sender: session)
+    }
+    
+    func authenticationViewControllerDidCancelLogin(authenticationViewController: SPTAuthViewController!) {
+        println("login cancelled")
+    }
 }
 
