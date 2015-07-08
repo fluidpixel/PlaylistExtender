@@ -17,8 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let Callback: NSURL = NSURL(string: "playlistextenderlogin://callback")!
     let clientID: String = "89ce87c720004dcda7261f1c49c15905"
     let clientSecret: String = "5e0e325e2b1f4dc093bfc0c2fdaefc8d"
-    let kTokenSwapURL = NSURL(string: "http://localhost:1234/swap")!
-    let kTokenRefreshURL = NSURL(string: "http://localhost:1234/refresh")!
+    let kTokenSwapURL = NSURL(string: "http://sheltered-citadel-3362.herokuapp.com/swap")!
+    let kTokenRefreshURL = NSURL(string: "http://sheltered-citadel-3362.herokuapp.com/refresh")!
     let scope: [AnyObject] = [SPTAuthStreamingScope, SPTAuthPlaylistModifyPublicScope, SPTAuthPlaylistModifyPrivateScope, SPTAuthPlaylistReadPrivateScope]
     let response: String = "code"
     let kSessionUserDefaultsKey  = "SpotifySession"
@@ -29,8 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         auth.clientID = clientID
         auth.requestedScopes = scope
         auth.redirectURL = Callback
-//        auth.tokenSwapURL = kTokenSwapURL
-//        auth.tokenRefreshURL = kTokenRefreshURL
+        auth.tokenSwapURL = kTokenSwapURL
+        auth.tokenRefreshURL = kTokenRefreshURL
         auth.sessionUserDefaultsKey = kSessionUserDefaultsKey
         
         return true
