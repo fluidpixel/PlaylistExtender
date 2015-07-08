@@ -16,25 +16,6 @@ class CustomTableViewCell: UITableViewCell {
     
     @IBOutlet weak var DetailLabel: UILabel!
     
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
     private func getImageFromURL(url: String, completion: ((data: NSData?) -> Void)) {
         NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: url)!, completionHandler: { (data: NSData!, response : NSURLResponse!, error : NSError!) -> Void in
             if error != nil {

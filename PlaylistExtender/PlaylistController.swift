@@ -27,7 +27,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.TableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "playlist cell")
+//        self.TableView.registerClass(PlaylistTableViewCell.self, forCellReuseIdentifier: "Playlist Cell")
         
         TableView.delegate = self
         TableView.dataSource = self
@@ -69,21 +69,21 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		
-        let cellIdentifier = "Playlist cell"
+        let cellIdentifier = "Playlist Cell"
         
-        var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as? UITableViewCell
-        if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: cellIdentifier)
-            cell?.textLabel!.adjustsFontSizeToFitWidth = true
-            cell?.textLabel!.minimumScaleFactor = 0.5
-            cell?.accessoryType = UITableViewCellAccessoryType.DetailDisclosureButton
-        }
-		cell!.textLabel?.text = playlistList.items?[indexPath.row].name
+        var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! PlaylistTableViewCell
+        
+        cell.albumName.text = playlistList.items?[indexPath.row].name
 		if let trackCount = playlistList.items?[indexPath.row].trackCount {
+			cell.trackCount.text = "\(trackCount) tracks"
+        } else {
+            cell.trackCount.text = " "
+        }
         
-			cell!.detailTextLabel?.text = "\(trackCount) tracks"
-		}
-		return cell!
+        cell.detailButton.addTarget(self, action: "detailButtonAction:", forControlEvents: UIControlEvents.TouchUpInside)
+        cell.detailButton.tag = indexPath.row
+        
+		return cell
 	}
 	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -92,6 +92,11 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         
 	}
+    
+    func detailButtonAction (sender: UIButton!) {
+        currentPlaylist = playlistList.items[sender.tag] as? SPTPartialPlaylist
+        performSegueWithIdentifier("ShowDetail", sender: self)
+    }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         

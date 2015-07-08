@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
@@ -43,7 +43,7 @@
             </objects>
             <point key="canvasLocation" x="537" y="-99"/>
         </scene>
-        <!--Playlist Controller-->
+        <!--Playlist Extender-->
         <scene sceneID="bAS-fh-8ni">
             <objects>
                 <viewController id="YIt-pg-cKP" customClass="PlaylistController" customModule="PlaylistExtender" customModuleProvider="target" sceneMemberID="viewController">
@@ -86,16 +86,67 @@
                                     <constraint firstAttribute="centerX" secondItem="Nro-X1-F6W" secondAttribute="centerX" id="mqZ-lD-svX"/>
                                 </constraints>
                             </view>
-                            <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PAo-q4-bxJ">
+                            <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="84" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="PAo-q4-bxJ">
                                 <rect key="frame" x="0.0" y="72" width="600" height="400"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="detailDisclosureButton" indentationWidth="10" reuseIdentifier="Playlist Cell" id="N3W-EL-pmz">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Playlist Cell" rowHeight="84" id="N3W-EL-pmz" customClass="PlaylistTableViewCell" customModule="PlaylistExtender" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="N3W-EL-pmz" id="aWi-th-hEk">
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wqO-VD-fNn">
+                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="84"/>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Album Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="MaJ-1z-7Ta">
+                                                    <rect key="frame" x="18" y="18" width="524" height="20"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="acQ-GU-1MB"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="acQ-GU-1MB"/>
+                                                        </mask>
+                                                    </variation>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dqW-Ih-fir">
+                                                    <rect key="frame" x="560" y="31" width="22" height="22"/>
+                                                    <state key="normal">
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tracks" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OuI-cZ-q8i">
+                                                    <rect key="frame" x="18" y="49" width="524" height="17"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                                                    <color key="textColor" red="0.25098039220000001" green="0.25098039220000001" blue="0.25098039220000001" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="wqO-VD-fNn" secondAttribute="trailing" id="1gY-kP-caG"/>
+                                                <constraint firstItem="MaJ-1z-7Ta" firstAttribute="leading" secondItem="aWi-th-hEk" secondAttribute="leadingMargin" constant="10" id="2rp-Pd-tDa"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="OuI-cZ-q8i" secondAttribute="bottom" constant="10" id="C27-SJ-JNd"/>
+                                                <constraint firstItem="OuI-cZ-q8i" firstAttribute="leading" secondItem="MaJ-1z-7Ta" secondAttribute="leading" id="FTj-jw-uqC"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="MaJ-1z-7Ta" secondAttribute="trailing" constant="50" id="Ikw-gS-03J"/>
+                                                <constraint firstItem="MaJ-1z-7Ta" firstAttribute="top" secondItem="aWi-th-hEk" secondAttribute="topMargin" constant="10" id="VYa-zH-K6c"/>
+                                                <constraint firstAttribute="centerY" secondItem="dqW-Ih-fir" secondAttribute="centerY" constant="-0.25" id="feY-bg-n7u"/>
+                                                <constraint firstItem="wqO-VD-fNn" firstAttribute="leading" secondItem="aWi-th-hEk" secondAttribute="leading" id="i1Z-Oo-Sno"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="dqW-Ih-fir" secondAttribute="trailing" constant="10" id="izn-1B-1l4"/>
+                                                <constraint firstItem="OuI-cZ-q8i" firstAttribute="trailing" secondItem="MaJ-1z-7Ta" secondAttribute="trailing" id="rIm-6V-XxG"/>
+                                                <constraint firstItem="wqO-VD-fNn" firstAttribute="top" secondItem="aWi-th-hEk" secondAttribute="top" id="yCy-Ap-Ait"/>
+                                                <constraint firstItem="dqW-Ih-fir" firstAttribute="centerY" secondItem="wqO-VD-fNn" secondAttribute="centerY" id="zW3-4w-ryF"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="albumName" destination="MaJ-1z-7Ta" id="3zw-21-6pI"/>
+                                            <outlet property="backgroundImage" destination="wqO-VD-fNn" id="bIz-Y8-YaL"/>
+                                            <outlet property="detailButton" destination="dqW-Ih-fir" id="VHI-YI-C6D"/>
+                                            <outlet property="trackCount" destination="OuI-cZ-q8i" id="9cA-Im-cw2"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -118,7 +169,7 @@
                             </mask>
                         </variation>
                     </view>
-                    <navigationItem key="navigationItem" id="NaP-c1-D4o"/>
+                    <navigationItem key="navigationItem" title="Playlist Extender" id="NaP-c1-D4o"/>
                     <connections>
                         <outlet property="TableView" destination="PAo-q4-bxJ" id="2z5-1t-qdw"/>
                         <outlet property="amountSlider" destination="Nro-X1-F6W" id="WpV-4H-TA9"/>
@@ -153,7 +204,7 @@
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="U5U-Qv-Uld">
                                             <rect key="frame" x="52" y="8" width="540" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AxY-be-Yxd">
