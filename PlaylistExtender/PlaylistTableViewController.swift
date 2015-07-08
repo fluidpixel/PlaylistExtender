@@ -41,19 +41,25 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 
-        let cell = self.tableView.dequeueReusableCellWithIdentifier("TrackCell") as! UITableViewCell
+        let cell = self.tableView.dequeueReusableCellWithIdentifier("TrackCell") as! CustomTableViewCell
+        
+        //todo - add image
+        
+        
+        
         var artistText = ""
         if list.count > 0  {
-            cell.textLabel?.text = "\(list[indexPath.row][0])"
+            cell.ApplyImage("\(list[indexPath.row][1])")
+            cell.Title.text = "\(list[indexPath.row][0])"
             
-            for var i = 2; i < list[indexPath.row].count; i++ {
-                if i != 2 {
+            for var i = 3; i < list[indexPath.row].count; i++ {
+                if i != 3 {
                     artistText = artistText + ", "
                 }
                 artistText = artistText + " \(list[indexPath.row][i])"
             }
             
-            cell.detailTextLabel?.text = " \(artistText) - \(list[indexPath.row][1])"
+            cell.DetailLabel.text = " \(artistText) - \(list[indexPath.row][2])"
         }
         
         return cell

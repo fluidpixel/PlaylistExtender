@@ -131,11 +131,11 @@ class PlaylistBuilder {
                 // Success
                 if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
                     println("URL Session Task Succeeded: HTTP \(statusCode)")
-                    
-                    if statusCode != 429 {
-                    
                     if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
-                        println(result)
+                        if statusCode != 429 {
+                    
+                    
+                        //println(result)
                         
                         var err : NSError?
                         if let jsonObject : NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: &err) as? NSDictionary {
@@ -165,10 +165,12 @@ class PlaylistBuilder {
                                 }
                             }
                         }
-                        }
+                        
                     } else {
+                        println(result)
                         completionHandler(result: false)
-                        self.InCaseof429()
+                        //self.InCaseof429()
+                    }
                     }
                 }
             }
@@ -187,6 +189,9 @@ class PlaylistBuilder {
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
         shuffle(tracksToAdd)
+            
+        var requestArray = [[String]]()
+        
         //println(tracksToAdd)
         
         //println(trackDictionary)
@@ -204,32 +209,44 @@ class PlaylistBuilder {
                 
                 if duplicateCounter[all[i]] != nil {
                     
-                    println(Double(duplicateCounter[all[i]]!))
+                    //println(Double(duplicateCounter[all[i]]!))
                     ratio = (Double(duplicateCounter[all[i]]!) / Double(instances))*100.0
                 }
-                    if (ratioCounter[all[i]] == nil) || Double(ratioCounter[all[i]]!) <= (ratio) {
-                        let temp = all[0]
-                        if trackDictionary[temp] != nil {
-                            
-                        }else {
-                            if ratioCounter[all[i]] == nil{
-                                ratioCounter[all[i]] = 0
-                            }
-                            ratioCounter[all[i]] = ratioCounter[all[i]]! + 1
-                            trackDictionary[temp] = temp
-                            if newArray.count <= numberOfTracks {
-                                newArray.append(temp)
-                            }
+                if (ratioCounter[all[i]] == nil) || Double(ratioCounter[all[i]]!) <= (ratio) {
+                    let temp = all[0]
+                    if trackDictionary[temp] != nil {
+                        
+                    }else {
+                        if ratioCounter[all[i]] == nil{
+                            ratioCounter[all[i]] = 0
+                        }
+                        ratioCounter[all[i]] = ratioCounter[all[i]]! + 1
+                        trackDictionary[temp] = temp
+                        if newArray.count <= numberOfTracks {
+                            newArray.append(temp)
                         }
                     }
-                
+                }
             }
         }
-
-        if numberOfTracks > 100 {
-            //split request into parts
+        
+        let arrayCount : Int = Int(ceil(Double(newArray.count / 100)))
+        
+        for var i = 0; i < arrayCount; i++ {
+            
+        //array start index = i, end index = i + 100 < array.count
+            
+        //get the relevant range of the array
+        
+        var endIndex = (i*100 + 100)
+            
+        if (i*100 + 100) > newArray.count {
+            endIndex = newArray.count
         }
-        let dict = ["uris" : newArray]
+            
+        let sliceOfArray: [String] = Array(newArray[(i*100)..<endIndex])
+
+        let dict = ["uris" : sliceOfArray]
         
         var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
         
@@ -253,21 +270,24 @@ class PlaylistBuilder {
                 // Success
                 if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
                     println("URL Session Task Succeeded: HTTP \(statusCode)")
-                    
+                     if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
                     if statusCode != 429 {
-                    if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
-                        println(result)
+                   
+                        //println(result)
                         
                         completionHandler(result: true)
-                    }
+                    
                     }else {
-                        self.InCaseof429()
+                        println(result)
+                        //self.InCaseof429()
                          completionHandler(result: false)
+                        }
                     }
                 }
             }
         })
         task.resume()
+        }
 
     }
     
@@ -334,7 +354,8 @@ class PlaylistBuilder {
                                     completionHandler(result: true)
                                 }
                             }else {
-                                self.InCaseof429()
+                                println(result)
+                                //self.InCaseof429()
                                  completionHandler(result: false)
                             }
                         }
@@ -552,6 +573,13 @@ class PlaylistBuilder {
                                         if let individual: NSDictionary = all.valueForKey("track") as? NSDictionary {
                                         
                                             tempArray.append(individual.valueForKey("name") as! String)
+                                            
+                                            if let album = individual.valueForKey("album") as? NSDictionary {
+                                                
+                                                if let images = album.valueForKey("images") as? NSArray {
+                                                    tempArray.append(images[2].valueForKey("url") as! String)
+                                                }
+                                            }
                                             
                                             tempArray.append(String(format: "%5.2f", (((individual.valueForKey("duration_ms"))!.doubleValue) / 60000.0)))
                                             

@@ -8,22 +8,29 @@
 
 import UIKit
 
-class PlaylistController: UITableViewController, UITableViewDataSource, UITableViewDelegate {
+class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     var session : SPTSession!
     var playlistList : SPTPlaylistList!
     
+    @IBOutlet weak var TableView: UITableView!
     let playlistBuilder = PlaylistBuilder()
     var currentPlaylist : SPTPartialPlaylist?
 	var selectedPlaylist : SPTPartialPlaylist?
 	
     var playlistIDArray = [String]()
     
-	@IBOutlet weak var amountSlider: UISlider!
+    @IBOutlet weak var amountSlider: UISlider!
 
     @IBOutlet weak var extendPlaylistButton: UIButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.TableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "playlist cell")
+        
+        TableView.delegate = self
+        TableView.dataSource = self
         
         loadPlaylists()
 	}
@@ -38,7 +45,7 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
                     self.currentPlaylist = playlist
                 }
                 
-                self.tableView.reloadData()
+                self.TableView.reloadData()
 			
             } else {
                 println("error caught: " + "\(error.description)")
@@ -46,7 +53,7 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
         }
     }
 	
-	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if playlistList != nil {
 			return playlistList.items.count
 		} else {
@@ -54,23 +61,32 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 		}
 	}
     
-    override func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
+    func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
         
         currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
-        performSegueWithIdentifier("SongsInPlaylist", sender: self)
+        performSegueWithIdentifier("ShowDetail", sender: self)
     }
 
-	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		
-		let cell = self.tableView.dequeueReusableCellWithIdentifier("playlist cell") as! UITableViewCell
-		cell.textLabel?.text = playlistList.items?[indexPath.row].name
+        let cellIdentifier = "Playlist cell"
+        
+        var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier) as? UITableViewCell
+        if cell == nil {
+            cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: cellIdentifier)
+            cell?.textLabel!.adjustsFontSizeToFitWidth = true
+            cell?.textLabel!.minimumScaleFactor = 0.5
+            cell?.accessoryType = UITableViewCellAccessoryType.DetailDisclosureButton
+        }
+		cell!.textLabel?.text = playlistList.items?[indexPath.row].name
 		if let trackCount = playlistList.items?[indexPath.row].trackCount {
-			cell.detailTextLabel?.text = "\(trackCount)"
+        
+			cell!.detailTextLabel?.text = "\(trackCount) tracks"
 		}
-		return cell
+		return cell!
 	}
 	
-	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		playlistBuilder.SetPlaylistList(playlistList)
 		currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
         
@@ -123,7 +139,8 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 					
 					self.loadPlaylists()
 					
-				}else if result == "429" {
+				}
+                if result == "429" {
 					self.ShowErrorAlert()
 				}
 			}
@@ -134,11 +151,7 @@ class PlaylistController: UITableViewController, UITableViewDataSource, UITableV
 	}
 	
     @IBAction func OnSliderDragged(sender: UISlider) {
-		extendPlaylistButton.setTitle("Extend by \(Int(sender.value)) Playlists", forState: .Normal)
-    }
-	
-    @IBAction func ReturnToLogin(sender: UIButton) {
-	
+        extendPlaylistButton.setTitle("Extend by \(Int(sender.value)) Tracks", forState: .Normal)
     }
     
     func ShowErrorAlert() {
