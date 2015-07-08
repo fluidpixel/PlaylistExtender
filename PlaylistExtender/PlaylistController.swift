@@ -59,6 +59,13 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
 	
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath == currentSelectedRow {
+            return 84
+        } else {
+            return 84
+        }
+    }
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		if playlistList != nil {
 			return playlistList.items.count
@@ -101,27 +108,41 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
-        
         if currentSelectedRow == indexPath {
                 tableView.deselectRowAtIndexPath(indexPath, animated: false)
-                extendView.alpha = 0.0
+                UIView.animateWithDuration(0.5, animations: {
+                    self.extendView.alpha = 0.0
+                })
+            
+                tableView.beginUpdates()
                 currentSelectedRow = nil
+                tableView.endUpdates()
+            
                 return
         }
         
+        tableView.beginUpdates()
         currentSelectedRow = indexPath
+        tableView.endUpdates()
+        
+        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
+        
         playlistBuilder.SetPlaylistList(playlistList)
         currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
-        extendView.alpha = 1.0
+        UIView.animateWithDuration(0.5, animations: {
+            self.extendView.alpha = 1.0
+        })
 	}
     
-    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        if currentSelectedRow == indexPath {
-            currentSelectedRow = nil
-        }
-        extendView.alpha = 0.0
-    }
+//    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+//        if currentSelectedRow == indexPath {
+//            currentSelectedRow = nil
+//        }
+//        UIView.animateWithDuration(0.5, animations: {
+//            self.extendView.alpha = 0.0
+//        })
+//    }
+//    
     func detailButtonAction (sender: UIButton!) {
         currentPlaylist = playlistList.items[sender.tag] as? SPTPartialPlaylist
         performSegueWithIdentifier("ShowDetail", sender: self)
@@ -185,7 +206,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
     @IBAction func OnSliderDragged(sender: UISlider) {
-        extendPlaylistButton.setTitle("Extend by \(Int(sender.value)) Tracks", forState: .Normal)
+        extendPlaylistButton.setTitle("EXTEND by \(Int(sender.value)) Tracks", forState: .Normal)
     }
     
     func ShowErrorAlert() {
