@@ -18,7 +18,6 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
     
     override func viewDidLoad() {
         
-        
         dispatch_async(dispatch_get_main_queue(),{
             self.title = self.playlist?.name
         })
@@ -45,11 +44,9 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
         
         //todo - add image
         
-        
-        
         var artistText = ""
         if list.count > 0  {
-            cell.ApplyImage("\(list[indexPath.row][1])")
+            cell.applyImage("\(list[indexPath.row][1])")
             cell.Title.text = "\(list[indexPath.row][0])"
             
             for var i = 3; i < list[indexPath.row].count; i++ {

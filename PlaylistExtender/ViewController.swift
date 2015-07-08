@@ -18,8 +18,9 @@ class ViewController: UIViewController, SPTAuthViewDelegate{
     @IBOutlet weak var loginButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        loginButton.hidden = true
+        
+        loginButton.alpha = 0.5
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "loginReceived", name: "LoginSuccessful", object: nil)
     }
     
@@ -38,7 +39,7 @@ class ViewController: UIViewController, SPTAuthViewDelegate{
                     auth.session = session
                     if error != nil {
                         println("error refreshing session: \(error)")
-                        self.loginButton.hidden = false
+                        self.loginButton.alpha = 1.0
                     }
                 })
             } else {
@@ -48,7 +49,7 @@ class ViewController: UIViewController, SPTAuthViewDelegate{
                 self.performSegueWithIdentifier("LoginReceived", sender: session)
             }
         } else {
-            self.loginButton.hidden = false
+            self.loginButton.alpha = 0.5
         }
     }
     

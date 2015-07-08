@@ -26,7 +26,7 @@ class CustomTableViewCell: UITableViewCell {
         }).resume()
     }
     
-    func ApplyImage(url : String) {
+    func applyImage(url : String) {
         getImageFromURL(url, completion: { data in
             
             dispatch_async(dispatch_get_main_queue(), { () -> Void in

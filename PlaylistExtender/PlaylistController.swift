@@ -17,17 +17,23 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     let playlistBuilder = PlaylistBuilder()
     var currentPlaylist : SPTPartialPlaylist?
 	var selectedPlaylist : SPTPartialPlaylist?
-	
+    var currentSelectedRow:NSIndexPath?
+    
     var playlistIDArray = [String]()
     
     @IBOutlet weak var amountSlider: UISlider!
 
     @IBOutlet weak var extendPlaylistButton: UIButton!
 
+    @IBOutlet weak var extendView: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        self.TableView.registerClass(PlaylistTableViewCell.self, forCellReuseIdentifier: "Playlist Cell")
+        let blur = UIBlurEffect(style: UIBlurEffectStyle.Dark)
+        let effectView = UIVisualEffectView(effect: blur)
+        effectView.frame = extendView.bounds
+        extendView.insertSubview(effectView, atIndex:0)
         
         TableView.delegate = self
         TableView.dataSource = self
@@ -73,7 +79,14 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! PlaylistTableViewCell
         
+        let playlist = playlistList.items?[indexPath.row] as? SPTPartialPlaylist
+        
+        if let albumArtwork = playlist?.smallestImage {
+            cell.applyImage(albumArtwork.imageURL)
+        }
+        
         cell.albumName.text = playlistList.items?[indexPath.row].name
+        
 		if let trackCount = playlistList.items?[indexPath.row].trackCount {
 			cell.trackCount.text = "\(trackCount) tracks"
         } else {
@@ -87,12 +100,28 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-		playlistBuilder.SetPlaylistList(playlistList)
-		currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
         
+        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
         
+        if currentSelectedRow == indexPath {
+                tableView.deselectRowAtIndexPath(indexPath, animated: false)
+                extendView.alpha = 0.0
+                currentSelectedRow = nil
+                return
+        }
+        
+        currentSelectedRow = indexPath
+        playlistBuilder.SetPlaylistList(playlistList)
+        currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
+        extendView.alpha = 1.0
 	}
     
+    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
+        if currentSelectedRow == indexPath {
+            currentSelectedRow = nil
+        }
+        extendView.alpha = 0.0
+    }
     func detailButtonAction (sender: UIButton!) {
         currentPlaylist = playlistList.items[sender.tag] as? SPTPartialPlaylist
         performSegueWithIdentifier("ShowDetail", sender: self)

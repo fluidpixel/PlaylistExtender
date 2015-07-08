@@ -111,8 +111,8 @@
 				B9DDE2581B18A6D300BC54FA /* PlaylistController.swift */,
 				B9DDE1A81B1C6FC0008341BE /* PlaylistBuilder.swift */,
 				B9DBDF9B1B4571610015477A /* PlaylistTableViewController.swift */,
-				B9D81B361B4C02A90007E4E3 /* TableViewCell.swift */,
 				B9DDE2311B1713E900BC54FA /* Main.storyboard */,
+				B9D81B361B4C02A90007E4E3 /* TableViewCell.swift */,
 				54209FF21B4D6FA700E2EEBE /* PlaylistTableViewCell.swift */,
 				B9DDE22B1B1713E900BC54FA /* Supporting Files */,
 			);
