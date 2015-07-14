@@ -12,10 +12,13 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var session : SPTSession!
     var playlistList : SPTPlaylistList!
+    var listOfPlaylists = [[String: String]]()
+    var numberOfPlaylists = 0
+    var numberOfGrabbedPlaylists = 0
     
     @IBOutlet weak var TableView: UITableView!
     let playlistBuilder = PlaylistBuilder()
-    var currentPlaylist : SPTPartialPlaylist?
+    var currentPlaylist = [String : String]()
 	var selectedPlaylist : SPTPartialPlaylist?
     var currentSelectedRow:NSIndexPath?
     
@@ -42,21 +45,26 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 
     func loadPlaylists() {
-        
-        SPTPlaylistList.playlistsForUserWithSession(session) { (error: NSError!, callback: AnyObject!) -> Void in
-            if error == nil {
-                self.playlistList = callback as! SPTPlaylistList
-                self.playlistBuilder.SetPlaylistList(self.playlistList)
-                if let playlist = self.playlistList.items[0] as? SPTPartialPlaylist {
-                    self.currentPlaylist = playlist
-                }
+        //change this to web api
+        playlistBuilder.grabUsersListOfPlaylists(0, thisSession: session) { (result, playlistCount) -> () in
+            
+            if result.count > 0 {
+                self.listOfPlaylists = result
+                self.playlistBuilder.SetPlaylistList(result)
+                
+                self.currentPlaylist = result[0]
+                
+                self.numberOfPlaylists = playlistCount
+                self.numberOfGrabbedPlaylists = self.numberOfGrabbedPlaylists + result.count
                 
                 self.TableView.reloadData()
-			
-            } else {
-                println("error caught: " + "\(error.description)")
+                
+            }else {
+                println("empty/nil playlist")
             }
+            
         }
+        
     }
 	
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -67,8 +75,8 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if playlistList != nil {
-			return playlistList.items.count
+		if listOfPlaylists.count > 0 {
+			return listOfPlaylists.count
 		} else {
 			return 0
 		}
@@ -76,7 +84,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(tableView: UITableView, accessoryButtonTappedForRowWithIndexPath indexPath: NSIndexPath) {
         
-        currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
+        currentPlaylist = listOfPlaylists[indexPath.row]
         performSegueWithIdentifier("ShowDetail", sender: self)
     }
 
@@ -86,18 +94,18 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! PlaylistTableViewCell
         
-        let playlist = playlistList.items?[indexPath.row] as? SPTPartialPlaylist
+        let playlist = listOfPlaylists[indexPath.row]
         
-        if let albumArtwork = playlist?.smallestImage {
-            cell.applyImage(albumArtwork.imageURL)
+        if let albumArtwork = listOfPlaylists[indexPath.row]["smallestImage"] {
+            cell.applyImage(NSURL(string: albumArtwork)!)
         }
         
-        cell.albumName.text = playlistList.items?[indexPath.row].name
+        cell.albumName.text = listOfPlaylists[indexPath.row]["playlistName"]
         
-		if let trackCount = playlistList.items?[indexPath.row].trackCount {
+		if let trackCount = listOfPlaylists[indexPath.row]["tracksInPlaylist"] {
 			cell.trackCount.text = "\(trackCount) tracks"
         } else {
-            cell.trackCount.text = " "
+            cell.trackCount.text = ""
         }
         
         cell.detailButton.addTarget(self, action: "detailButtonAction:", forControlEvents: UIControlEvents.TouchUpInside)
@@ -126,30 +134,28 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.endUpdates()
         
         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
+        currentPlaylist = listOfPlaylists[indexPath.row]
+        playlistBuilder.SetPlaylistList(listOfPlaylists)
         
-        playlistBuilder.SetPlaylistList(playlistList)
-        currentPlaylist = playlistList.items[indexPath.row] as? SPTPartialPlaylist
         UIView.animateWithDuration(0.5, animations: {
             self.extendView.alpha = 1.0
         })
 	}
     
-//    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-//        if currentSelectedRow == indexPath {
-//            currentSelectedRow = nil
-//        }
-//        UIView.animateWithDuration(0.5, animations: {
-//            self.extendView.alpha = 0.0
-//        })
-//    }
-//    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        //load more playlists if more and user scrolls to the bottom of the screen
+        if numberOfGrabbedPlaylists == indexPath.row && numberOfGrabbedPlaylists < numberOfPlaylists {
+            println("Start loading new playlists")
+        }
+    }
+ 
     func detailButtonAction (sender: UIButton!) {
-        currentPlaylist = playlistList.items[sender.tag] as? SPTPartialPlaylist
+       // currentPlaylist = playlistList
         performSegueWithIdentifier("ShowDetail", sender: self)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
         
             if var viewController = segue.destinationViewController as? PlaylistTableViewController {
             
@@ -185,10 +191,10 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 
 	func newPlaylist (name: String, extend:Bool) {
 		
-		if self.currentPlaylist != nil {
+		if self.currentPlaylist["PlaylistName"] != nil {
 			var number = Int(self.amountSlider.value)
 			
-			self.playlistBuilder.buildPlaylist(self.currentPlaylist!, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: false) { result in
+			self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: false) { result in
 				
 				if result != nil {
 					

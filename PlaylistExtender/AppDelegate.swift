@@ -45,9 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     println("error" + "\(error.localizedDescription)")
                     return
                 }
-                
-                
-                
+
                 let defaults = NSUserDefaults.standardUserDefaults()
                 
                 let sessionData = NSKeyedArchiver.archivedDataWithRootObject(session)

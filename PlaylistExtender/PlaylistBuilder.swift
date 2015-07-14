@@ -19,8 +19,7 @@ class PlaylistBuilder {
     
     var artist_Dictionary: [String : String] = [:]
     var currentTracks = [String]()
-    //var trackMap: [String : [String]] = [:]
-    //change this to one structure to prevent duplicates
+
     var trackDictionary : [String : String] = [:] //uris as both keys and values to thin out any duplicates
     var tracksToAdd = [[String]]()
     var duplicateCounter: [String : Int] = [:]
@@ -28,6 +27,7 @@ class PlaylistBuilder {
     var instances : Int = 0
     var totalTracksInPlaylist : Int? = 0
     var PlaylistList : SPTPlaylistList?
+    var listOfPlaylists = [[String : String]]()
 
     var finished : Bool = false
     var owner_ID = ""
@@ -39,8 +39,9 @@ class PlaylistBuilder {
 
     let clientID: String = "89ce87c720004dcda7261f1c49c15905" //TODO add to defaults
 
-    func SetPlaylistList(list: SPTPlaylistList){
-        PlaylistList = list
+    func SetPlaylistList(list: [[String : String]]){
+        listOfPlaylists = list
+        
         resultingArray = [[String]]()
     }
     
@@ -57,19 +58,18 @@ class PlaylistBuilder {
     }
     
     //MARK: FUNCTIONS
-    func buildPlaylist(playlist: SPTPartialPlaylist, session: SPTSession, sizeToIncreaseBy: Int, name: String?, extendOrBuild: Bool, completionHandler: (result: String?) -> () ) {
+    func buildPlaylist(playlist: [String : String], session: SPTSession, sizeToIncreaseBy: Int, name: String?, extendOrBuild: Bool, completionHandler: (result: String?) -> () ) {
         resetVARS()
         currentSession = session
-        PlaylistName = playlist.name
+        PlaylistName = playlist["playlistName"]
         PlaylistNewName = name
-        println(playlist.playableUri)
+        //println(playlist.playableUri)
         
         transferTracksOver = extendOrBuild
         
-        let array = split("\(playlist.uri)") {$0 == ":"}
-        playlist_ID = array[(array.count-1)]
+        playlist_ID = playlist["playlistID"]
         
-        owner_ID = array[2]
+        owner_ID = playlist["ownerID"]!
             
         FindArtists() { result in
             
@@ -78,8 +78,7 @@ class PlaylistBuilder {
                 self.findPopularSongsByArtist(sizeToIncreaseBy) { result in
                     
                     if result == true {
-                        //create new playlist and add songs to it, along with current songs on the playlist
-                        //self.tracksToAdd = Array(self.trackDictionary.values)
+
                         self.CreateNewPlaylist(sizeToIncreaseBy) { result in
                             
                             if result == true {
@@ -250,8 +249,6 @@ class PlaylistBuilder {
         
         var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
         
-       // URL = self.NSURLByAppendingQueryParameters(URL, queryParameters: dict)
-        
         let request = NSMutableURLRequest(URL: URL!)
         request.HTTPMethod = "POST"
         
@@ -273,9 +270,10 @@ class PlaylistBuilder {
                      if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
                     if statusCode != 429 {
                    
-                        //println(result)
-                        
-                        completionHandler(result: true)
+                        println(result)
+                        if i == (arrayCount - 1) {
+                            completionHandler(result: true)
+                        }
                     
                     }else {
                         println(result)
@@ -513,16 +511,149 @@ class PlaylistBuilder {
             }
         }
     }
+    
+    //MARK: Remove individual tracks from playlists
+    
+    func deleteTrackFromPlaylist(playlist_ID : String, trackURI : String, completionHandler: (result: Bool) -> () ) {
+        
+        let user_ID: String = currentSession!.canonicalUsername
+        
+        let array : [String: String] = ["{\"uri\"" : "\"\(trackURI)\"}"]
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
+        
+        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID)")
+
+        // JSON Body "{\"tracks\":[{\"uri\":\"\(trackURI)\"}]}"
+        
+        let bodyObject : [String: [String: String]] = ["\"tracks\"" : array]
+    
+        println(bodyObject)
+        let request = NSMutableURLRequest(URL: URL!)
+        
+        request.HTTPMethod = "DELETE"
+        
+        println(NSJSONSerialization.isValidJSONObject(bodyObject))
+        
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+        
+        request.addValue("\(currentSession!.tokenType) \(currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
+        
+        let task = session.dataTaskWithRequest(request, completionHandler: { (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void in
+            if error == nil {
+                
+                if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
+                    
+                    println("URL Session Task Succeeded: HTTP \(statusCode)")
+                    
+                    if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
+                        println(result)
+                    }
+                }
+            }
+        })
+        task.resume()
+
+        
+    }
+    
+    //MARK: Grab initial playlistList
+    
+    func grabUsersListOfPlaylists(offset: Int, thisSession: SPTSession, completionHandler: (result: [[String: String]], playlistCount: Int) -> () ) {
+        
+        let user_ID: String = thisSession.canonicalUsername
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
+
+        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists")
+        
+        let URLParams = [
+            "limit" : "50",
+            "offset" : "\(offset)"
+        ]
+        
+        URL = self.NSURLByAppendingQueryParameters(URL, queryParameters: URLParams)
+        
+        let request = NSMutableURLRequest(URL: URL!)
+        
+        request.HTTPMethod = "GET"
+        
+        println("\(thisSession.tokenType) \n \(thisSession.accessToken)")
+        
+        request.addValue("\(thisSession.tokenType) \(thisSession.accessToken)", forHTTPHeaderField: "Authorization")
+        
+        
+        let task = session.dataTaskWithRequest(request, completionHandler: { (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void in
+            if error == nil {
+                
+                if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
+                    
+                    println("URL Session Task Succeeded: HTTP \(statusCode)")
+                    
+                    if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
+                        //println(result)
+                        
+                        var resultantArray = [[String: String]]()
+                        
+                        var err : NSError?
+                        if let jsonObject : NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: &err) as? NSDictionary {
+                            
+                            let totalPlaylists: Int = Int((jsonObject.valueForKey("total") as! CLong))
+                            
+                            if let items : NSArray = jsonObject.valueForKey("items") as? NSArray {
+                                
+                                for item in items {
+                                    
+                                    var temp = [String: String]()
+                                    
+                                    if let track : NSDictionary = item.valueForKey("tracks") as? NSDictionary {
+                                        let trackCount : Int = (Int((track.valueForKey("total") as? CLong)!))
+                                        if  trackCount > 0 {
+                                            
+                                            temp["tracksInPlaylist"] = track.valueForKey("total") as? String
+                                            
+                                            temp["playlistName"] = item.valueForKey("name") as? String
+                                            
+                                            temp["playlistID"] = item.valueForKey("id") as? String
+                                            
+                                            if let images: NSArray = item.valueForKey("images") as? NSArray {
+                                                
+                                                if images.count > 0 {
+                                                    temp["smallestImage"] = images[0].valueForKey("url") as? String
+                                                }
+                                            }
+                                            
+                                            
+                                            
+                                            if let owner : NSDictionary = item.valueForKey("owner") as? NSDictionary {
+                                                
+                                                temp["ownerID"] = owner.valueForKey("id") as? String
+                                                
+                                            }
+                                            resultantArray.append(temp)
+                                            
+                                        }
+                                    }
+                                }
+                                completionHandler(result: resultantArray, playlistCount: totalPlaylists)
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        task.resume()
+        
+    }
 
         //MARK: Functions used to display tracks
-    func GrabTracksFromPlaylist(offset : Int, tracksInPlaylist : Int, playlist : SPTPartialPlaylist, completionHandler: (result: [[String]]?) -> () ) {
+    func GrabTracksFromPlaylist(offset : Int, tracksInPlaylist : Int?, playlist : [String : String], completionHandler: (result: [[String]]?) -> () ) {
         
-        let array = split("\(playlist.uri)") {$0 == ":"}
-        let playlist_ID = array[(array.count-1)]
+        let playlist_ID = playlist["playlistID"]!
         
-        let owner_ID = array[2]
-        
-        
+        let owner_ID = playlist["ownerID"]!
         
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
@@ -543,9 +674,9 @@ class PlaylistBuilder {
             
             request.HTTPMethod = "GET"
         
-            println("\(self.currentSession!.tokenType) \n \(self.currentSession!.accessToken)")
+            println("\(currentSession!.tokenType) \n \(currentSession!.accessToken)")
             
-            request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
+            request.addValue("\(currentSession!.tokenType) \(currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
             
             let task = session.dataTaskWithRequest(request, completionHandler: { (data: NSData!, response: NSURLResponse!, error: NSError!) -> Void in
                 if error == nil {
@@ -583,6 +714,8 @@ class PlaylistBuilder {
                                             
                                             tempArray.append(String(format: "%5.2f", (((individual.valueForKey("duration_ms"))!.doubleValue) / 60000.0)))
                                             
+                                            tempArray.append(individual.valueForKey("uri") as! String)
+                                            
                                             if let artists = individual.valueForKey("artists") as? NSArray {
 
                                                 for art in artists {
@@ -608,8 +741,6 @@ class PlaylistBuilder {
                                     } else {
                                         completionHandler(result: self.resultingArray)
                                     }
-                                    
-                                    
                                 }
                             }
                         }
@@ -619,6 +750,7 @@ class PlaylistBuilder {
             task.resume()
     }
 
+    //MARK: Helper functions
     func SortResultsIntoArray(object : NSDictionary) {
         
         if let tracks: [NSDictionary] = object.valueForKey("tracks") as? [NSDictionary] {
