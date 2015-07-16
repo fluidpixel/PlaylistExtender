@@ -34,7 +34,6 @@ class PlaylistBuilder {
     var transferTracksOver: Bool = false
     
     var filterExplitives: Bool = false
-    var IsExplicit = false
     var resultingArray = [[String]]()
 
     let clientID: String = "89ce87c720004dcda7261f1c49c15905" //TODO add to defaults
@@ -58,12 +57,12 @@ class PlaylistBuilder {
     }
     
     //MARK: FUNCTIONS
-    func buildPlaylist(playlist: [String : String], session: SPTSession, sizeToIncreaseBy: Int, name: String?, extendOrBuild: Bool, completionHandler: (result: String?) -> () ) {
+    func buildPlaylist(playlist: [String : String], session: SPTSession, sizeToIncreaseBy: Int, name: String?, extendOrBuild: Bool, filter : Bool, completionHandler: (result: String?) -> () ) {
         resetVARS()
         currentSession = session
         PlaylistName = playlist["playlistName"]
         PlaylistNewName = name
-        //println(playlist.playableUri)
+        filterExplitives = filter
         
         transferTracksOver = extendOrBuild
         
@@ -111,7 +110,6 @@ class PlaylistBuilder {
         }
 
         // JSON Body
-        
         let bodyObject = [
             "name": "\(playlistName)",
             "public": "false"
@@ -191,10 +189,6 @@ class PlaylistBuilder {
             
         var requestArray = [[String]]()
         
-        //println(tracksToAdd)
-        
-        //println(trackDictionary)
-        
         //have a normal shuffle then pick X songs by each artist up to Y size of request
         var ratioCounter: [String: Int] = [:]
         var newArray = [String]()
@@ -208,7 +202,6 @@ class PlaylistBuilder {
                 
                 if duplicateCounter[all[i]] != nil {
                     
-                    //println(Double(duplicateCounter[all[i]]!))
                     ratio = (Double(duplicateCounter[all[i]]!) / Double(instances))*100.0
                 }
                 if (ratioCounter[all[i]] == nil) || Double(ratioCounter[all[i]]!) <= (ratio) {
@@ -229,9 +222,11 @@ class PlaylistBuilder {
             }
         }
         
-        let arrayCount : Int = Int(ceil(Double(newArray.count / 100)))
+        let arrayCount  = ceil((Double(newArray.count) / 100.0))
         
-        for var i = 0; i < arrayCount; i++ {
+        let convertToInt : Int = Int(arrayCount)
+        
+        for var i = 0; i < convertToInt; i++ {
             
         //array start index = i, end index = i + 100 < array.count
             
@@ -271,13 +266,12 @@ class PlaylistBuilder {
                     if statusCode != 429 {
                    
                         println(result)
-                        if i == (arrayCount - 1) {
+                        if i > (convertToInt - 1) {
                             completionHandler(result: true)
                         }
                     
                     }else {
                         println(result)
-                        //self.InCaseof429()
                          completionHandler(result: false)
                         }
                     }
@@ -514,20 +508,18 @@ class PlaylistBuilder {
     
     //MARK: Remove individual tracks from playlists
     
-    func deleteTrackFromPlaylist(playlist_ID : String, trackURI : String, completionHandler: (result: Bool) -> () ) {
+    func deleteTrackFromPlaylist(playlist_ID : String, trackURI : String, pos : Int, completionHandler: (result: Bool) -> () ) {
         
         let user_ID: String = currentSession!.canonicalUsername
         
-        let array : [String: String] = ["{\"uri\"" : "\"\(trackURI)\"}"]
+        let array : [String: String] = ["\"positions\"" : "[\(pos)]", "\"uri\"" : "\"\(trackURI)\""]
         
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
         var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID)")
-
-        // JSON Body "{\"tracks\":[{\"uri\":\"\(trackURI)\"}]}"
         
-        let bodyObject : [String: [String: String]] = ["\"tracks\"" : array]
+        let bodyObject = ["\"tracks\"" : array]
     
         println(bodyObject)
         let request = NSMutableURLRequest(URL: URL!)
@@ -536,7 +528,7 @@ class PlaylistBuilder {
         
         println(NSJSONSerialization.isValidJSONObject(bodyObject))
         
-        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.PrettyPrinted, error: nil)
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.allZeros, error: nil)
         
         request.addValue("\(currentSession!.tokenType) \(currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
         
@@ -730,7 +722,6 @@ class PlaylistBuilder {
                                     let offset2 = offset + 100
                                     if offset2 < tracksInPlaylist {
                                         
-                                        
                                         self.GrabTracksFromPlaylist(offset2, tracksInPlaylist: tracksInPlaylist, playlist: playlist, completionHandler: { (result) -> () in
                                             
                                             if result != nil && result!.count > 0 {
@@ -757,26 +748,31 @@ class PlaylistBuilder {
             
             for all in tracks {
                 
-                if let artists = all.valueForKey("artists") as? NSArray {
-                    var counter = 1
-                    for art in artists {
-                        var index = 0
-                        if (tracksToAdd.count-1) > 0 {
-                            index = tracksToAdd.count-1
-                        }else {
-                            index = 0
-                        }
-                        
-                        if tracksToAdd.count == 0 {
-                            tracksToAdd.append([all.valueForKey("uri") as! String, art.valueForKey("id") as! String])
+                let IsExplicit = all.valueForKey("explicit") as! Bool
+                
+                if !IsExplicit || !filterExplitives{
+                
+                    if let artists = all.valueForKey("artists") as? NSArray {
+                        var counter = 1
+                        for art in artists {
+                            var index = 0
+                            if (tracksToAdd.count-1) > 0 {
+                                index = tracksToAdd.count-1
+                            }else {
+                                index = 0
+                            }
                             
-                        } else if tracksToAdd[index][0] != all.valueForKey("id") as! String {
-                            tracksToAdd.append([all.valueForKey("uri") as! String, art.valueForKey("id") as! String])
-                            
-                        } else {
-                            tracksToAdd[tracksToAdd.count-1].append(art.valueForKey("id") as! String)
+                            if tracksToAdd.count == 0 {
+                                tracksToAdd.append([all.valueForKey("uri") as! String, art.valueForKey("id") as! String])
+                                
+                            } else if tracksToAdd[index][0] != all.valueForKey("id") as! String {
+                                tracksToAdd.append([all.valueForKey("uri") as! String, art.valueForKey("id") as! String])
+                                
+                            } else {
+                                tracksToAdd[tracksToAdd.count-1].append(art.valueForKey("id") as! String)
+                            }
+                            counter++
                         }
-                        counter++
                     }
                 }
             }
@@ -796,8 +792,6 @@ class PlaylistBuilder {
                         
                         currentTracks.append(track.valueForKey("uri") as! String)
                         
-                        IsExplicit = track.valueForKey("explicit") as! Bool
-                        
                         trackDictionary[track.valueForKey("uri") as! String] = (track.valueForKey("uri") as! String)
                         
                         if let artists = track["artists"] as? NSArray {
@@ -806,10 +800,9 @@ class PlaylistBuilder {
                                 
                                 if i.valueForKey("id") as? String != nil {
                                     
-                                    //if !IsExplicit || !filterExplitives{
                                     instances++
                                     artist_Dictionary[i.valueForKey("name") as! String] = i.valueForKey("id") as? String
-                                    //trackMap[currentTracks[currentTracks.count-1]] = trackMap[currentTracks[currentTracks.count-1]]!.append(i.valueForKey("name") as? String)
+
                                     //add count to dupes if an artist dupe
                                     if duplicateCounter[i.valueForKey("id") as! String] == nil {
                                         duplicateCounter[i.valueForKey("id") as! String] = 1
@@ -817,7 +810,7 @@ class PlaylistBuilder {
                                         let counter = duplicateCounter[i.valueForKey("id") as! String]
                                         duplicateCounter[i.valueForKey("id") as! String] = (counter! + 1)
                                     }
-                                    //}
+                                    
                                 }
                             }
                         }

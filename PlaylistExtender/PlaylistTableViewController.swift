@@ -9,9 +9,17 @@
 import UIKit
 import Foundation
 
+struct storeData {
+  
+    //dictionary to store playlists that have already been fetched
+    private static var storedPlaylists = [String : [[String]]]()
+
+}
+
 class PlaylistTableViewController: UITableViewController, UITableViewDataSource, UITableViewDelegate {
 
     var builder = PlaylistBuilder()
+    
     var playlist = [String: String]()
     var Currentsession : SPTSession?
     var list = [[String]]()
@@ -19,18 +27,23 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
     override func viewDidLoad() {
         
         dispatch_async(dispatch_get_main_queue(),{
-            self.title = self.playlist["name"]
+            self.title = self.playlist["playlistName"]
         })
         
         builder.SetupSession(Currentsession!)
-       
-        builder.GrabTracksFromPlaylist(0, tracksInPlaylist: playlist["total"]?.toInt(), playlist: playlist) { (result) -> () in
-            if result != nil && result!.count != 0 {
-                self.list = result!
-                dispatch_async(dispatch_get_main_queue(),{
-                    self.tableView.reloadData()
-                })
+        if storeData.storedPlaylists[self.playlist["playlistID"]!] == nil {
+            builder.GrabTracksFromPlaylist(0, tracksInPlaylist: playlist["total"]?.toInt(), playlist: playlist) { (result) -> () in
+                if result != nil && result!.count != 0 {
+                    self.list = result!
+                    storeData.storedPlaylists[self.playlist["playlistID"]!] = result!
+                    dispatch_async(dispatch_get_main_queue(),{
+                        self.tableView.reloadData()
+                    })
+                }
             }
+        } else {
+            self.list = storeData.storedPlaylists[self.playlist["playlistID"]!]!
+            self.tableView.reloadData()
         }
     }
     
@@ -50,11 +63,11 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
             
             list[indexPath.row].removeAll(keepCapacity: false)
             list.removeAtIndex(indexPath.row)
-            
+            self.tableView.reloadData()
             
             //call spotify 
-            builder.deleteTrackFromPlaylist(playlist["playlistID"]!, trackURI: trackURI, completionHandler: { result in
-                self.tableView.reloadData()
+            builder.deleteTrackFromPlaylist(playlist["playlistID"]!, trackURI: trackURI, pos : indexPath.row, completionHandler: { result in
+                
             })
         }
     }

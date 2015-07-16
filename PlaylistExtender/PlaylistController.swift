@@ -19,6 +19,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var TableView: UITableView!
     let playlistBuilder = PlaylistBuilder()
     var currentPlaylist = [String : String]()
+    
 	var selectedPlaylist : SPTPartialPlaylist?
     var currentSelectedRow:NSIndexPath?
     
@@ -29,6 +30,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var extendPlaylistButton: UIButton!
 
     @IBOutlet weak var extendView: UIView!
+    @IBOutlet weak var explicitSwitch: UISwitch!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -191,10 +193,10 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 
 	func newPlaylist (name: String, extend:Bool) {
 		
-		if self.currentPlaylist["PlaylistName"] != nil {
+		if self.currentPlaylist["playlistName"] != nil {
 			var number = Int(self.amountSlider.value)
 			
-			self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: false) { result in
+            self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: extend, filter : (explicitSwitch.on)) { result in
 				
 				if result != nil {
 					
