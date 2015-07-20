@@ -139,6 +139,8 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         currentPlaylist = listOfPlaylists[indexPath.row]
         playlistBuilder.SetPlaylistList(listOfPlaylists)
         
+        amountSlider.maximumValue = Float(((currentPlaylist["tracksInPlaylist"]!.toInt()))!)
+        
         UIView.animateWithDuration(0.5, animations: {
             self.extendView.alpha = 1.0
         })

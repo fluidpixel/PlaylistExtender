@@ -32,7 +32,7 @@ class PlaylistTableViewController: UITableViewController, UITableViewDataSource,
         
         builder.SetupSession(Currentsession!)
         if storeData.storedPlaylists[self.playlist["playlistID"]!] == nil {
-            builder.GrabTracksFromPlaylist(0, tracksInPlaylist: playlist["total"]?.toInt(), playlist: playlist) { (result) -> () in
+            builder.GrabTracksFromPlaylist(0, tracksInPlaylist: playlist["tracksInPlaylist"]?.toInt(), playlist: playlist) { (result) -> () in
                 if result != nil && result!.count != 0 {
                     self.list = result!
                     storeData.storedPlaylists[self.playlist["playlistID"]!] = result!

@@ -1,3 +1,4 @@
+
 //
 //  PlaylistBuilder.swift
 //  PlaylistExtender
@@ -37,6 +38,8 @@ class PlaylistBuilder {
     var resultingArray = [[String]]()
 
     let clientID: String = "89ce87c720004dcda7261f1c49c15905" //TODO add to defaults
+    
+    var completionLogger = [Int : Bool]()
 
     func SetPlaylistList(list: [[String : String]]){
         listOfPlaylists = list
@@ -50,6 +53,7 @@ class PlaylistBuilder {
     
     func resetVARS(){
         currentTracks = [String]()
+        completionLogger = [Int : Bool]()
         finished = false
         PlaylistNewName = nil
         PlaylistNewID = nil
@@ -131,18 +135,14 @@ class PlaylistBuilder {
                     if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
                         if statusCode != 429 {
                     
-                    
-                        //println(result)
-                        
                         var err : NSError?
                         if let jsonObject : NSDictionary = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: &err) as? NSDictionary {
-                            
                             
                             self.PlaylistNewID = jsonObject.valueForKey("id") as? String
                             
                             if self.PlaylistNewID != nil {
                                
-                                self.AddTracks(numbertoAdd) { result in
+                                self.AddTracksManager(numbertoAdd) { result in
                                  println("trace - add tracks called")
                                     if result == true {
                                         if self.transferTracksOver == true {
@@ -150,6 +150,9 @@ class PlaylistBuilder {
                                                 if result == true {
                                                     completionHandler(result: true)
                                                     println("trace - finished copying over")
+                                                }else if result == false {
+                                                    println("429 error")
+                                                    completionHandler(result: false)
                                                 }
                                             }
                                         }else {
@@ -157,7 +160,6 @@ class PlaylistBuilder {
                                             completionHandler(result: true)
                                         }
                                          println("trace - callback received")
-                                        
                                     }
                                 }
                             }
@@ -165,7 +167,17 @@ class PlaylistBuilder {
                         
                     } else {
                         println(result)
-                        completionHandler(result: false)
+                            
+                        usleep(5000)
+                        
+                        self.CreateNewPlaylist(numbertoAdd, completionHandler: { (result) -> () in
+                            
+                            if result == true {
+                                completionHandler(result: true)
+                            }
+                        })
+                            
+                        //completionHandler(result: false)
                         //self.InCaseof429()
                     }
                     }
@@ -179,12 +191,9 @@ class PlaylistBuilder {
         task.resume()
     }
     //TODO - Add functionality to add more than 100 tracks
-    func AddTracks(numberOfTracks: Int, completionHandler: (result: Bool?) -> () ) {
+    func AddTracksManager(numberOfTracks: Int, completionHandler: (result: Bool?) -> () ) {
         
         // add tracks to the new playlist here
-        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
-        
         shuffle(tracksToAdd)
             
         var requestArray = [[String]]()
@@ -222,100 +231,44 @@ class PlaylistBuilder {
             }
         }
         
-        let arrayCount  = ceil((Double(newArray.count) / 100.0))
-        
-        let convertToInt : Int = Int(arrayCount)
-        
-        for var i = 0; i < convertToInt; i++ {
+        //split this into two mthods
+        AddTracksPoster(0,total: numberOfTracks, newArray: newArray) { result in
             
-        //array start index = i, end index = i + 100 < array.count
-            
-        //get the relevant range of the array
-        
-        var endIndex = (i*100 + 100)
-            
-        if (i*100 + 100) > newArray.count {
-            endIndex = newArray.count
+            completionHandler(result: result)
         }
-            
-        let sliceOfArray: [String] = Array(newArray[(i*100)..<endIndex])
-
-        let dict = ["uris" : sliceOfArray]
         
-        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
-        
-        let request = NSMutableURLRequest(URL: URL!)
-        request.HTTPMethod = "POST"
-        
-        // JSON Body
-
-        let bodyObject = dict
-        
-        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.allZeros, error: nil)
-        
-        request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("1", forHTTPHeaderField: "Retry-After")
-        
-        let task = session.dataTaskWithRequest(request, completionHandler: { (data : NSData!, response : NSURLResponse!, error : NSError!) -> Void in
-            if (error == nil) {
-                // Success
-                if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
-                    println("URL Session Task Succeeded: HTTP \(statusCode)")
-                     if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
-                    if statusCode != 429 {
-                   
-                        println(result)
-                        if i > (convertToInt - 1) {
-                            completionHandler(result: true)
-                        }
-                    
-                    }else {
-                        println(result)
-                         completionHandler(result: false)
-                        }
-                    }
-                }
-            }
-        })
-        task.resume()
-        }
-
     }
     
-    func CopyOverExistingTracks(offset: Int, completionHandler: (result: Bool?) -> () ) {
+    func AddTracksPoster(offset: Int, total: Int, newArray: [String], completionHandler: (result: Bool?) -> () ) {
         
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
-        var offsetted = [String]()
+        let arrayCount  = ceil((Double(newArray.count) / 100.0))
+        let convertToInt : Int = Int(arrayCount)
         
-        if offset < currentTracks.count {
+        //for var i = 0; i < convertToInt; i++ {
             
-            if offset + 100 < currentTracks.count {
-                let add = offset + 100
-                 offsetted = Array(currentTracks[offset..<add])
-            } else {
-                offsetted = Array(currentTracks[offset..<currentTracks.count])
+            //array start index = i, end index = i + 100 < array.count
+            //get the relevant range of the array
+        
+    
+            var endIndex = (offset + 100)
+            
+            if endIndex > newArray.count {
+                endIndex = newArray.count
             }
-
-            let dict : [ String: [String]] = ["uris" : offsetted]
+            
+            let sliceOfArray: [String] = Array(newArray[offset..<endIndex])
+            let dict = ["uris" : sliceOfArray]
             
             var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
-            
-            // URL = self.NSURLByAppendingQueryParameters(URL, queryParameters: dict)
-            
             let request = NSMutableURLRequest(URL: URL!)
             request.HTTPMethod = "POST"
-            
-            //println(URL!)
             
             // JSON Body
             
             let bodyObject = dict
-            
-            //println(bodyObject)
-            
             request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.allZeros, error: nil)
             
             request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
@@ -326,36 +279,134 @@ class PlaylistBuilder {
                 if (error == nil) {
                     // Success
                     if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
-                        println("URL Session Task Succeeded: HTTP \(statusCode), \(offset)")
-                        
+                        println("URL Session Task Succeeded: HTTP \(statusCode)")
                         if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
-                            //println(result)
                             if statusCode != 429 {
-                                let offset2 : Int = offset + 100
                                 
-                                if offset2 < self.currentTracks.count {
-                                    self.CopyOverExistingTracks(offset2) { result in
+                                println(result)
+                                let offset2 = offset + 100
+                                if offset2 >= (total) {
+                                    completionHandler(result: true)
+                                } else {
+                                    
+                                    if offset2 < total {
+                                        self.AddTracksPoster(offset2, total: total, newArray: newArray, completionHandler: { (result) -> () in
+                                        
+                                            completionHandler(result: result)
+                                        })
+                                    }
+                                }
+                                
+                            }else if statusCode == 429 {
+                                
+                                usleep(5000)
+                                if offset + 100 < total {
+                                    self.AddTracksPoster(offset, total: total, newArray: newArray) { result in
                                         if result == true {
                                             completionHandler(result: true)
                                         }
                                     }
-                                }else {
-                                    
-                                    self.finished = true
-                                    println("trace - copy over")
-                                    completionHandler(result: true)
                                 }
                             }else {
-                                println(result)
-                                //self.InCaseof429()
-                                 completionHandler(result: false)
+                                completionHandler(result: false)
+                                
                             }
+
                         }
                     }
                 }
             })
             task.resume()
+        //}
+        
+    }
+    
+    func CopyOverExistingTracks(offset: Int, completionHandler: (result: Bool?) -> () ) {
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
+        
+        var offsetted = [String]()
+        
+        var usableOffset = offset
+        
+        if usableOffset < currentTracks.count {
             
+            if completionLogger[usableOffset] != true {
+            
+                if usableOffset + 100 < currentTracks.count {
+                    let add = usableOffset + 100
+                     offsetted = Array(currentTracks[usableOffset..<add])
+                } else {
+                    offsetted = Array(currentTracks[usableOffset..<currentTracks.count])
+                }
+
+                let dict : [ String: [String]] = ["uris" : offsetted]
+                
+                var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
+                
+                // URL = self.NSURLByAppendingQueryParameters(URL, queryParameters: dict)
+                
+                let request = NSMutableURLRequest(URL: URL!)
+                request.HTTPMethod = "POST"
+                
+                // JSON Body
+                
+                let bodyObject = dict
+                
+                //println(bodyObject)
+                
+                request.HTTPBody = NSJSONSerialization.dataWithJSONObject(bodyObject, options: NSJSONWritingOptions.allZeros, error: nil)
+                
+                request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
+                request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.addValue("1", forHTTPHeaderField: "Retry-After")
+                
+                let task = session.dataTaskWithRequest(request, completionHandler: { (data : NSData!, response : NSURLResponse!, error : NSError!) -> Void in
+                    if (error == nil) {
+                        // Success
+                        if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
+                            println("URL Session Task Succeeded: HTTP \(statusCode), \(offset)")
+                            
+                            if let result = NSString(data: data, encoding: NSUTF8StringEncoding) {
+                                //println(result)
+                                if statusCode != 429 {
+                                    let offset2 : Int = usableOffset + 100
+                                    self.completionLogger[usableOffset] = true
+                                    if offset2 < self.currentTracks.count {
+                                        self.CopyOverExistingTracks(offset2) { result in
+                                            if result == true {
+                                                completionHandler(result: true)
+                                            }
+                                        }
+                                    }else {
+                                        
+                                        self.finished = true
+                                        println("trace - copy over")
+                                        completionHandler(result: true)
+                                    }
+                                }else if statusCode == 429 {
+                                    
+                                    usleep(5000)
+                                    
+                                    self.CopyOverExistingTracks(usableOffset) { result in
+                                        if result == true {
+                                            completionHandler(result: true)
+                                        }
+                                    }
+                                }else {
+                                    completionHandler(result: false)
+                                    
+                                }
+                            }
+                        }
+                    }
+                })
+                task.resume()
+                
+            }else {
+                usableOffset = usableOffset + 100
+            }
         }
         
     }
@@ -401,7 +452,7 @@ class PlaylistBuilder {
                 println(self.currentSession!.expirationDate)
                 
                 request.addValue("\(self.currentSession!.tokenType) \(self.currentSession!.accessToken)", forHTTPHeaderField: "Authorization")
-               // request.addValue("1", forHTTPHeaderField: "Retry-After")
+                request.addValue("1", forHTTPHeaderField: "Retry-After")
                 
                 //limits at 100 per grab, so will need to repeat grab until grabbed entire playlist
                 //just grab artists to minimize size of array?
@@ -519,7 +570,12 @@ class PlaylistBuilder {
         
         var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID)")
         
-        let bodyObject = ["\"tracks\"" : array]
+        let bodyObject = ["\"tracks\"" :[
+            
+            "\"positions\"" : "[\(pos)]",
+            "\"uri\"" : "\"\(trackURI)\""
+                ]
+            ]
     
         println(bodyObject)
         let request = NSMutableURLRequest(URL: URL!)
@@ -604,7 +660,7 @@ class PlaylistBuilder {
                                         let trackCount : Int = (Int((track.valueForKey("total") as? CLong)!))
                                         if  trackCount > 0 {
                                             
-                                            temp["tracksInPlaylist"] = track.valueForKey("total") as? String
+                                            temp["tracksInPlaylist"] = "\(trackCount)"
                                             
                                             temp["playlistName"] = item.valueForKey("name") as? String
                                             
@@ -616,8 +672,6 @@ class PlaylistBuilder {
                                                     temp["smallestImage"] = images[0].valueForKey("url") as? String
                                                 }
                                             }
-                                            
-                                            
                                             
                                             if let owner : NSDictionary = item.valueForKey("owner") as? NSDictionary {
                                                 
