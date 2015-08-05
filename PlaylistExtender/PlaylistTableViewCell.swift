@@ -34,9 +34,9 @@ class PlaylistTableViewCell: UITableViewCell {
     }
     
     private func getImageFromURL(url: NSURL, completion: ((data: NSData?) -> Void)) {
-        NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data: NSData!, response : NSURLResponse!, error : NSError!) -> Void in
+        NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data: NSData?, response : NSURLResponse?, error : NSError?) -> Void in
             if error != nil {
-                println(error.localizedDescription)
+                print(error!.localizedDescription)
             }else {
                 completion(data: data)
             }

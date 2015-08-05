@@ -36,13 +36,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject?) -> Bool {
+    func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {
         
         //if (SPTAuth.defaultInstance().canHandleURL(url)) {
             SPTAuth.defaultInstance().handleAuthCallbackWithTriggeredAuthURL(url, callback: { (error: NSError!, session: SPTSession!) -> Void in
                 
                 if error != nil {
-                    println("error" + "\(error.localizedDescription)")
+                    print("error" + "\(error.localizedDescription)")
                     return
                 }
 

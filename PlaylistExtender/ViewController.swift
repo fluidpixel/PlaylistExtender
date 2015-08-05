@@ -38,12 +38,12 @@ class ViewController: UIViewController, SPTAuthViewDelegate{
                 SPTAuth.defaultInstance().renewSession(session, callback: { (error: NSError!, session: SPTSession!) -> Void in
                     auth.session = session
                     if error != nil {
-                        println("error refreshing session: \(error)")
+                        print("error refreshing session: \(error)")
                         self.loginButton.alpha = 1.0
                     }
                 })
             } else {
-                println("session is valid")
+                print("session is valid")
                 
                 auth.session = session
                 self.performSegueWithIdentifier("LoginReceived", sender: session)
@@ -78,17 +78,17 @@ class ViewController: UIViewController, SPTAuthViewDelegate{
     }
 
     func authenticationViewController(authenticationViewController: SPTAuthViewController!, didFailToLogin error: NSError!) {
-        println("login failed: \(error)")
+        print("login failed: \(error)")
     }
     
     func authenticationViewController(authenticationViewController: SPTAuthViewController!, didLoginWithSession session: SPTSession!) {
-        println("login success")
+        print("login success")
         SPTAuth.defaultInstance().session = session
         self.performSegueWithIdentifier("LoginReceived", sender: session)
     }
     
     func authenticationViewControllerDidCancelLogin(authenticationViewController: SPTAuthViewController!) {
-        println("login cancelled")
+        print("login cancelled")
     }
 }
 

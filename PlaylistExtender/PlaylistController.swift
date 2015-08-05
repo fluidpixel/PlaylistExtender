@@ -59,10 +59,12 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.numberOfPlaylists = playlistCount
                 self.numberOfGrabbedPlaylists = self.numberOfGrabbedPlaylists + result.count
                 
-                self.TableView.reloadData()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.TableView.reloadData()
+                })
                 
             }else {
-                println("empty/nil playlist")
+                print("empty/nil playlist")
             }
             
         }
@@ -88,23 +90,24 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         currentPlaylist = listOfPlaylists[indexPath.row]
         performSegueWithIdentifier("ShowDetail", sender: self)
+        
     }
 
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		
         let cellIdentifier = "Playlist Cell"
         
-        var cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! PlaylistTableViewCell
-        
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier, forIndexPath: indexPath) as! PlaylistTableViewCell
+        cell.backgroundImage.image = UIImage(named: "loginButton")
         let playlist = listOfPlaylists[indexPath.row]
         
-        if let albumArtwork = listOfPlaylists[indexPath.row]["smallestImage"] {
+        if let albumArtwork = playlist["smallestImage"] {
             cell.applyImage(NSURL(string: albumArtwork)!)
         }
         
-        cell.albumName.text = listOfPlaylists[indexPath.row]["playlistName"]
+        cell.albumName.text = playlist["playlistName"]
         
-		if let trackCount = listOfPlaylists[indexPath.row]["tracksInPlaylist"] {
+		if let trackCount = playlist["tracksInPlaylist"] {
 			cell.trackCount.text = "\(trackCount) tracks"
         } else {
             cell.trackCount.text = ""
@@ -139,7 +142,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         currentPlaylist = listOfPlaylists[indexPath.row]
         playlistBuilder.SetPlaylistList(listOfPlaylists)
         
-        amountSlider.maximumValue = Float(((currentPlaylist["tracksInPlaylist"]!.toInt()))!)
+        amountSlider.maximumValue = Float(((Int(currentPlaylist["tracksInPlaylist"]!)))!)
         
         UIView.animateWithDuration(0.5, animations: {
             self.extendView.alpha = 1.0
@@ -150,7 +153,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         //load more playlists if more and user scrolls to the bottom of the screen
         if numberOfGrabbedPlaylists == indexPath.row && numberOfGrabbedPlaylists < numberOfPlaylists {
-            println("Start loading new playlists")
+            print("Start loading new playlists")
         }
     }
  
@@ -161,7 +164,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-            if var viewController = segue.destinationViewController as? PlaylistTableViewController {
+            if let viewController = segue.destinationViewController as? PlaylistTableViewController {
             
                 viewController.playlist = currentPlaylist
                 viewController.Currentsession = session
@@ -183,11 +186,11 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         alertView.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
 		alertView.addAction(UIAlertAction(title: "Copy Existing Tracks", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
-			self.newPlaylist(txt!.text, extend: true)
+			self.newPlaylist(txt!.text!, extend: true)
 		}))
 
         alertView.addAction(UIAlertAction(title: "Brand New Playlist", style: UIAlertActionStyle.Default, handler: { UIAlertAction -> Void in
-		self.newPlaylist(txt!.text, extend: false)
+		self.newPlaylist(txt!.text!, extend: false)
         }))
 	
         self.presentViewController(alertView, animated: true, completion: nil)
@@ -196,7 +199,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	func newPlaylist (name: String, extend:Bool) {
 		
 		if self.currentPlaylist["playlistName"] != nil {
-			var number = Int(self.amountSlider.value)
+			let number = Int(self.amountSlider.value)
 			
             self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: extend, filter : (explicitSwitch.on)) { result in
 				
@@ -211,7 +214,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 			}
 			
 		} else {
-			println("Please pick a valid playlist")
+			print("Please pick a valid playlist")
 		}
 	}
 	
