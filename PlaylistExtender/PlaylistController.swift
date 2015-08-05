@@ -43,9 +43,15 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         
         TableView.delegate = self
         TableView.dataSource = self
+        TableView.backgroundColor = UIColor.darkTextColor()
         
+       
         loadPlaylists()
 	}
+    
+    override func viewWillAppear(animated: Bool) {
+         navigationItem.title = "Playlist Extender"
+    }
 
     func loadPlaylists() {
         //change this to web api
@@ -187,9 +193,10 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
             if let viewController = segue.destinationViewController as? PlaylistTableViewController {
-            
+                navigationItem.title = nil
                 viewController.playlist = currentPlaylist
                 viewController.Currentsession = session
+                viewController.navigationItem.title = currentPlaylist["playlistName"]
             }
         
     }

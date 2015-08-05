@@ -26,10 +26,10 @@ class PlaylistTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         
-        dispatch_async(dispatch_get_main_queue(),{
-            self.title = self.playlist["playlistName"]
-        })
-        
+//        dispatch_async(dispatch_get_main_queue(),{
+//            self.title = self.playlist["playlistName"]
+//        })
+//        
         tableView.backgroundColor = UIColor.darkTextColor()
         
         builder.SetupSession(Currentsession!)
@@ -101,4 +101,12 @@ class PlaylistTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 
     }
+    
+//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+//        
+//        if let viewController = segue.destinationViewController as? PlaylistController {
+//            viewController.navigationItem.title = "Playlist Extender"
+//        }
+//        
+//    }
 }
