@@ -153,8 +153,11 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         cell
         playlistBuilder.SetPlaylistList(listOfPlaylists)
         
-        amountSlider.maximumValue = Float(((Int(currentPlaylist["tracksInPlaylist"]!)))!)
-
+        amountSlider.maximumValue = max(Float(((Int(currentPlaylist["tracksInPlaylist"]!)))!), 20.0)
+        amountSlider.minimumValue = min(Float(((Int(currentPlaylist["tracksInPlaylist"]!)))!), 10.0)
+        amountSlider.value = amountSlider.minimumValue
+        extendPlaylistButton.setTitle("EXTEND by \(Int(amountSlider.value)) Tracks ✚", forState: .Normal)
+        
         extendPlaylistTitle.text =  currentPlaylist["playlistName"]
         
         UIView.animateWithDuration(0.5, animations: {
