@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate {
     
     var session : SPTSession!
     var playlistList : SPTPlaylistList!
@@ -28,6 +28,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var amountSlider: UISlider!
 
     @IBOutlet weak var extendPlaylistButton: UIButton!
+    @IBOutlet weak var extendPlaylistTitle: UILabel!
 
     @IBOutlet weak var extendView: UIView!
     @IBOutlet weak var explicitSwitch: UISwitch!
@@ -73,7 +74,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if indexPath == currentSelectedRow {
-            return 84
+            return 104
         } else {
             return 84
         }
@@ -121,8 +122,11 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
+        currentPlaylist = listOfPlaylists[indexPath.row]
+        
         if currentSelectedRow == indexPath {
                 tableView.deselectRowAtIndexPath(indexPath, animated: false)
+            
                 UIView.animateWithDuration(0.5, animations: {
                     self.extendView.alpha = 0.0
                 })
@@ -139,10 +143,13 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.endUpdates()
         
         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
-        currentPlaylist = listOfPlaylists[indexPath.row]
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        cell
         playlistBuilder.SetPlaylistList(listOfPlaylists)
         
         amountSlider.maximumValue = Float(((Int(currentPlaylist["tracksInPlaylist"]!)))!)
+
+        extendPlaylistTitle.text =  currentPlaylist["playlistName"]
         
         UIView.animateWithDuration(0.5, animations: {
             self.extendView.alpha = 1.0
@@ -157,6 +164,21 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
  
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+
+        if let indexPath = currentSelectedRow {
+            TableView.deselectRowAtIndexPath(indexPath, animated: false)
+        }
+        
+        UIView.animateWithDuration(0.5, animations: {
+            self.extendView.alpha = 0.0
+        })
+        
+        TableView.beginUpdates()
+        currentSelectedRow = nil
+        TableView.endUpdates()
+    }
+    
     func detailButtonAction (sender: UIButton!) {
        // currentPlaylist = playlistList
         performSegueWithIdentifier("ShowDetail", sender: self)
@@ -220,7 +242,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
     @IBAction func OnSliderDragged(sender: UISlider) {
-        extendPlaylistButton.setTitle("EXTEND by \(Int(sender.value)) Tracks", forState: .Normal)
+        extendPlaylistButton.setTitle("EXTEND by \(Int(sender.value)) Tracks ✚", forState: .Normal)
     }
     
     func ShowErrorAlert() {

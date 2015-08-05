@@ -5,6 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8135.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -63,8 +64,8 @@
                                     <rect key="frame" x="0.0" y="170" width="600" height="112"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Powered by Spotify" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LQU-Xp-84E">
-                                            <rect key="frame" x="236" y="46" width="129" height="20"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Powered by Spotify" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LQU-Xp-84E">
+                                            <rect key="frame" x="231.5" y="46.5" width="138.5" height="19.5"/>
                                             <fontDescription key="fontDescription" type="system" weight="thin" pointSize="16"/>
                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -87,7 +88,7 @@
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="wqO-VD-fNn">
                                                     <rect key="frame" x="0.0" y="0.0" width="600" height="84"/>
                                                 </imageView>
-                                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1hh-Az-vut" userLabel="DarkenView">
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1hh-Az-vut" userLabel="DarkenView">
                                                     <rect key="frame" x="0.0" y="0.0" width="600" height="84"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
                                                 </view>
@@ -106,7 +107,7 @@
                                                     </variation>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tracks" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OuI-cZ-q8i">
-                                                    <rect key="frame" x="18" y="50" width="524" height="15"/>
+                                                    <rect key="frame" x="18" y="51" width="524" height="14.5"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -125,15 +126,19 @@
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="wqO-VD-fNn" secondAttribute="trailing" id="1gY-kP-caG"/>
                                                 <constraint firstItem="MaJ-1z-7Ta" firstAttribute="leading" secondItem="aWi-th-hEk" secondAttribute="leadingMargin" constant="10" id="2rp-Pd-tDa"/>
+                                                <constraint firstItem="1hh-Az-vut" firstAttribute="centerY" secondItem="aWi-th-hEk" secondAttribute="centerY" id="Bz8-J5-3bk"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="OuI-cZ-q8i" secondAttribute="bottom" constant="10" id="C27-SJ-JNd"/>
                                                 <constraint firstItem="OuI-cZ-q8i" firstAttribute="leading" secondItem="MaJ-1z-7Ta" secondAttribute="leading" id="FTj-jw-uqC"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="MaJ-1z-7Ta" secondAttribute="trailing" constant="50" id="Ikw-gS-03J"/>
+                                                <constraint firstItem="1hh-Az-vut" firstAttribute="height" secondItem="aWi-th-hEk" secondAttribute="height" id="Iok-IC-ZVK"/>
                                                 <constraint firstItem="MaJ-1z-7Ta" firstAttribute="top" secondItem="aWi-th-hEk" secondAttribute="topMargin" constant="10" id="VYa-zH-K6c"/>
                                                 <constraint firstAttribute="bottom" secondItem="wqO-VD-fNn" secondAttribute="bottom" id="e48-RO-ovD"/>
                                                 <constraint firstAttribute="centerY" secondItem="dqW-Ih-fir" secondAttribute="centerY" id="feY-bg-n7u"/>
                                                 <constraint firstItem="wqO-VD-fNn" firstAttribute="leading" secondItem="aWi-th-hEk" secondAttribute="leading" id="i1Z-Oo-Sno"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="dqW-Ih-fir" secondAttribute="trailing" id="izn-1B-1l4"/>
+                                                <constraint firstItem="1hh-Az-vut" firstAttribute="centerX" secondItem="aWi-th-hEk" secondAttribute="centerX" id="nr9-w6-8Vi"/>
                                                 <constraint firstItem="OuI-cZ-q8i" firstAttribute="trailing" secondItem="MaJ-1z-7Ta" secondAttribute="trailing" id="rIm-6V-XxG"/>
+                                                <constraint firstItem="1hh-Az-vut" firstAttribute="width" secondItem="aWi-th-hEk" secondAttribute="width" id="rsD-dC-hgs"/>
                                                 <constraint firstItem="wqO-VD-fNn" firstAttribute="top" secondItem="aWi-th-hEk" secondAttribute="top" id="yCy-Ap-Ait"/>
                                                 <constraint firstItem="dqW-Ih-fir" firstAttribute="centerY" secondItem="wqO-VD-fNn" secondAttribute="centerY" id="zW3-4w-ryF"/>
                                             </constraints>
@@ -155,33 +160,45 @@
                             <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Fl5-cK-KIr">
                                 <rect key="frame" x="0.0" y="450" width="600" height="150"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ayP-CR-fgV">
-                                        <rect key="frame" x="209" y="96" width="181" height="34"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ayP-CR-fgV">
+                                        <rect key="frame" x="199.5" y="48.5" width="200" height="34"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
-                                        <state key="normal" title="EXTEND by 10 Tracks">
+                                        <state key="normal" title="EXTEND by 10 Tracks ✚">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <state key="highlighted">
+                                            <color key="titleColor" red="0.95621252059999995" green="0.0" blue="0.65541172029999994" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
                                         <connections>
                                             <action selector="ExtendPlaylistButton:" destination="YIt-pg-cKP" eventType="touchUpInside" id="IHi-bs-m3b"/>
                                         </connections>
                                     </button>
                                     <slider opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="10" minValue="10" maxValue="200" translatesAutoresizingMaskIntoConstraints="NO" id="Nro-X1-F6W">
-                                        <rect key="frame" x="18" y="20" width="564" height="31"/>
+                                        <rect key="frame" x="18" y="90" width="564" height="31"/>
                                         <color key="minimumTrackTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <action selector="OnSliderDragged:" destination="YIt-pg-cKP" eventType="valueChanged" id="0Ij-zd-w4L"/>
                                         </connections>
                                     </slider>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Album Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="3Ys-ZP-kCZ">
+                                        <rect key="frame" x="30" y="20" width="540" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
+                                        <color key="textColor" red="0.87566179037094116" green="0.87563556432723999" blue="0.87565040588378906" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="Nro-X1-F6W" firstAttribute="top" secondItem="Fl5-cK-KIr" secondAttribute="top" constant="20" symbolic="YES" id="JZe-ho-hpK"/>
+                                    <constraint firstItem="ayP-CR-fgV" firstAttribute="top" secondItem="3Ys-ZP-kCZ" secondAttribute="bottom" constant="8" symbolic="YES" id="4AN-Ba-wxO"/>
+                                    <constraint firstItem="3Ys-ZP-kCZ" firstAttribute="width" secondItem="Fl5-cK-KIr" secondAttribute="width" multiplier="0.9" id="B1V-F8-0g9"/>
                                     <constraint firstItem="Nro-X1-F6W" firstAttribute="leading" secondItem="Fl5-cK-KIr" secondAttribute="leading" constant="20" symbolic="YES" id="QB8-HP-diD"/>
                                     <constraint firstItem="ayP-CR-fgV" firstAttribute="centerX" secondItem="Nro-X1-F6W" secondAttribute="centerX" constant="-0.5" id="SVH-lu-02k"/>
-                                    <constraint firstAttribute="bottom" secondItem="ayP-CR-fgV" secondAttribute="bottom" constant="20" symbolic="YES" id="eh4-Wf-cmk"/>
+                                    <constraint firstAttribute="bottom" secondItem="Nro-X1-F6W" secondAttribute="bottom" constant="30" id="e9T-Kz-bRQ"/>
                                     <constraint firstAttribute="trailing" secondItem="Nro-X1-F6W" secondAttribute="trailing" constant="20" symbolic="YES" id="feP-DZ-rxJ"/>
+                                    <constraint firstItem="3Ys-ZP-kCZ" firstAttribute="centerX" secondItem="Fl5-cK-KIr" secondAttribute="centerX" id="kRr-Pv-lJq"/>
                                     <constraint firstAttribute="centerX" secondItem="Nro-X1-F6W" secondAttribute="centerX" id="mqZ-lD-svX"/>
+                                    <constraint firstItem="3Ys-ZP-kCZ" firstAttribute="top" secondItem="Fl5-cK-KIr" secondAttribute="top" constant="20" symbolic="YES" id="qFn-CG-XxW"/>
                                     <constraint firstAttribute="height" constant="150" id="tpI-MD-7Xl"/>
                                 </constraints>
                             </view>
@@ -202,6 +219,7 @@
                         <outlet property="TableView" destination="PAo-q4-bxJ" id="2z5-1t-qdw"/>
                         <outlet property="amountSlider" destination="Nro-X1-F6W" id="WpV-4H-TA9"/>
                         <outlet property="extendPlaylistButton" destination="ayP-CR-fgV" id="1I1-8f-kbd"/>
+                        <outlet property="extendPlaylistTitle" destination="3Ys-ZP-kCZ" id="NjI-Sz-N2S"/>
                         <outlet property="extendView" destination="Fl5-cK-KIr" id="pta-ac-hJc"/>
                         <segue destination="zh3-Rf-6Er" kind="show" identifier="ShowDetail" id="tJG-Eu-CbQ"/>
                     </connections>
