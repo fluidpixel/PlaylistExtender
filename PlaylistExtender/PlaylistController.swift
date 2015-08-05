@@ -210,6 +210,7 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
         let alertView = UIAlertController(title: "Playlist Name", message: message, preferredStyle: UIAlertControllerStyle.Alert)
         alertView.addTextFieldWithConfigurationHandler { (textField: UITextField!) -> Void in
             textField.textAlignment = NSTextAlignment.Center
+            textField.placeholder = self.currentPlaylist["playlistName"]
             txt = textField
         }
         
