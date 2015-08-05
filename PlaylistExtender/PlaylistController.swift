@@ -201,7 +201,10 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 		if self.currentPlaylist["playlistName"] != nil {
 			let number = Int(self.amountSlider.value)
 			
-            self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: extend, filter : (false)) { result in
+            let defaults = NSUserDefaults.standardUserDefaults()
+            let explicitFilter = defaults.boolForKey("explicit_filter_preference")
+            
+            self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: extend, filter : (explicitFilter)) { result in
 				
 				if result != nil {
 					self.loadPlaylists()
