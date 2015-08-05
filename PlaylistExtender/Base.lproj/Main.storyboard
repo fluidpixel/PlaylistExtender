@@ -214,32 +214,32 @@
         <scene sceneID="uo7-en-8nz">
             <objects>
                 <tableViewController title="Playlist Title" id="zh3-Rf-6Er" customClass="PlaylistTableViewController" customModule="PlaylistExtender" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="YVw-LC-FXB">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="46" sectionHeaderHeight="22" sectionFooterHeight="22" id="YVw-LC-FXB">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="TrackCell" id="bWQ-nV-0ih" customClass="CustomTableViewCell" customModule="PlaylistExtender" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="86" width="600" height="44"/>
+                                <rect key="frame" x="0.0" y="86" width="600" height="46"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bWQ-nV-0ih" id="uxP-iV-CEr">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="45.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jEc-1R-r6h">
-                                            <rect key="frame" x="8" y="8" width="36" height="27"/>
+                                            <rect key="frame" x="8" y="8" width="39.5" height="29.5"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="jEc-1R-r6h" secondAttribute="height" multiplier="4:3" id="0Tb-ZL-fyh"/>
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.75000000000000022" translatesAutoresizingMaskIntoConstraints="NO" id="U5U-Qv-Uld">
-                                            <rect key="frame" x="52" y="8" width="540" height="21"/>
+                                            <rect key="frame" x="55" y="8" width="536.5" height="20.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="textColor" red="0.87202316522598267" green="0.87199705839157104" blue="0.87201184034347534" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.75000000000000022" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AxY-be-Yxd">
-                                            <rect key="frame" x="52" y="23" width="540" height="17"/>
+                                            <rect key="frame" x="55" y="25" width="536.5" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -257,6 +257,7 @@
                                         <constraint firstItem="U5U-Qv-Uld" firstAttribute="leading" secondItem="AxY-be-Yxd" secondAttribute="leading" id="sQx-gZ-vh7"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <connections>
                                     <outlet property="AlbumImage" destination="jEc-1R-r6h" id="thL-Fk-FjZ"/>
                                     <outlet property="DetailLabel" destination="AxY-be-Yxd" id="YZM-Pg-EXM"/>
@@ -302,4 +303,5 @@
         <image name="LoginButton" width="488" height="88"/>
         <image name="music-playlist" width="28" height="28"/>
     </resources>
+    <color key="tintColor" red="0.95621252059936523" green="0.0" blue="0.65541172027587891" alpha="1" colorSpace="calibratedRGB"/>
 </document>

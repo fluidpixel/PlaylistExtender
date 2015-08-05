@@ -30,6 +30,8 @@ class PlaylistTableViewController: UITableViewController {
             self.title = self.playlist["playlistName"]
         })
         
+        tableView.backgroundColor = UIColor.darkTextColor()
+        
         builder.SetupSession(Currentsession!)
         if storeData.storedPlaylists[self.playlist["playlistID"]!] == nil {
             builder.GrabTracksFromPlaylist(0, tracksInPlaylist: Int(playlist["tracksInPlaylist"]!), playlist: playlist) { (result) -> () in
