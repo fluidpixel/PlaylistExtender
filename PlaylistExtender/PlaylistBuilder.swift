@@ -102,7 +102,7 @@ class PlaylistBuilder {
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
 
-        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists")
+        let URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists")
         
         let request = NSMutableURLRequest(URL: URL!)
         request.HTTPMethod = "POST"
@@ -201,7 +201,7 @@ class PlaylistBuilder {
         // add tracks to the new playlist here
         shuffle(tracksToAdd)
             
-        let requestArray = [[String]]()
+//        let requestArray = [[String]]()
         
         //have a normal shuffle then pick X songs by each artist up to Y size of request
         var ratioCounter: [String: Int] = [:]
@@ -249,8 +249,8 @@ class PlaylistBuilder {
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
-        let arrayCount  = ceil((Double(newArray.count) / 100.0))
-        let convertToInt : Int = Int(arrayCount)
+//        let arrayCount  = ceil((Double(newArray.count) / 100.0))
+//        let convertToInt : Int = Int(arrayCount)
         
         //for var i = 0; i < convertToInt; i++ {
             
@@ -267,7 +267,7 @@ class PlaylistBuilder {
             let sliceOfArray: [String] = Array(newArray[offset..<endIndex])
             let dict = ["uris" : sliceOfArray]
             
-            var URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
+            let URL = NSURL(string: "https://api.spotify.com/v1/users/\(currentSession!.canonicalUsername)/playlists/\(PlaylistNewID!)/tracks?position=0")
             let request = NSMutableURLRequest(URL: URL!)
             request.HTTPMethod = "POST"
             
@@ -382,7 +382,7 @@ class PlaylistBuilder {
                         if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
                             print("URL Session Task Succeeded: HTTP \(statusCode), \(offset)")
                             
-                            if let result = NSString(data: data!, encoding: NSUTF8StringEncoding) {
+                            if let _ = NSString(data: data!, encoding: NSUTF8StringEncoding) {
                                 //println(result)
                                 if statusCode != 429 {
                                     let offset2 : Int = usableOffset + 100
@@ -440,7 +440,7 @@ class PlaylistBuilder {
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
-        let user_ID: String = currentSession!.canonicalUsername
+//        let user_ID: String = currentSession!.canonicalUsername
         
         //need a catch for when the playlist does not belong to the user
         
@@ -523,7 +523,7 @@ class PlaylistBuilder {
         
         var counter = 0
         
-        for (key, value) in artist_Dictionary {
+        for (_, value) in artist_Dictionary {
         
             var URL = NSURL(string: "https://api.spotify.com/v1/artists/\(value)/top-tracks")
             
@@ -547,13 +547,13 @@ class PlaylistBuilder {
                 let task = session.dataTaskWithRequest(request, completionHandler: { (data : NSData?, response : NSURLResponse?, error : NSError?) -> Void in
                     if (error == nil) {
                         // Success
-                        if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
-                            //println("URL Session Task Succeeded: HTTP \(statusCode)")
-                            if let result = NSString(data: data!, encoding: NSUTF8StringEncoding) {
-                                //println(result)
-                                
-                            }
-                        }
+//                        if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
+//                            //println("URL Session Task Succeeded: HTTP \(statusCode)")
+//                            if let result = NSString(data: data!, encoding: NSUTF8StringEncoding) {
+//                                //println(result)
+//                                
+//                            }
+//                        }
                         
                         do {
                         if let jsonObject : NSDictionary = try NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.MutableContainers) as? NSDictionary {
@@ -585,12 +585,12 @@ class PlaylistBuilder {
         
         let user_ID: String = currentSession!.canonicalUsername
         
-        let array : [String: String] = ["\"positions\"" : "[\(pos)]", "\"uri\"" : "\"\(trackURI)\""]
+//        let array : [String: String] = ["\"positions\"" : "[\(pos)]", "\"uri\"" : "\"\(trackURI)\""]
         
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
-        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID)")
+        let URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID)")
         
         let bodyObject = ["\"tracks\"" :[
             
@@ -733,7 +733,7 @@ class PlaylistBuilder {
         let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
         let session = NSURLSession(configuration: sessionConfig, delegate: nil, delegateQueue: nil)
         
-        let user_ID: String  = currentSession!.canonicalUsername
+//        let user_ID: String  = currentSession!.canonicalUsername
         
         print(playlist_ID)
         
@@ -852,7 +852,7 @@ class PlaylistBuilder {
     
     func SortResultIntoDictionary(object : NSDictionary) {
         // take artist ID and name in dictionary
-        for (key, value) in object {
+        for (key, _) in object {
             
             totalTracksInPlaylist = object.valueForKey("total") as? Int
             
@@ -916,7 +916,7 @@ class PlaylistBuilder {
         
         let user_ID: String = currentSession!.canonicalUsername
         
-        var URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID!)/followers")
+        let URL = NSURL(string: "https://api.spotify.com/v1/users/\(user_ID)/playlists/\(playlist_ID!)/followers")
         
         let request = NSMutableURLRequest(URL: URL!)
         
@@ -931,10 +931,10 @@ class PlaylistBuilder {
                 // Success
                 if let statusCode = (response as? NSHTTPURLResponse)?.statusCode {
                     print("URL Session Task Succeeded: HTTP \(statusCode)")
-                    if let result = NSString(data: data!, encoding: NSUTF8StringEncoding) {
-                        //println(result)
-                        
-                    }
+//                    if let result = NSString(data: data!, encoding: NSUTF8StringEncoding) {
+//                        //println(result)
+//                        
+//                    }
                 }
                 
             }

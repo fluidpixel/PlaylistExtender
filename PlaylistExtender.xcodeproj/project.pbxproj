@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		54209FF31B4D6FA700E2EEBE /* PlaylistTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54209FF21B4D6FA700E2EEBE /* PlaylistTableViewCell.swift */; };
+		5468CA681B72A57C00D2CC31 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5468CA671B72A57C00D2CC31 /* Settings.bundle */; };
 		B9D81B371B4C02A90007E4E3 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D81B361B4C02A90007E4E3 /* TableViewCell.swift */; };
 		B9D92FC71B27193D0065FAFC /* Spotify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9D92FC61B27193D0065FAFC /* Spotify.framework */; };
 		B9DBDF9C1B4571610015477A /* PlaylistTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DBDF9B1B4571610015477A /* PlaylistTableViewController.swift */; };
@@ -37,6 +38,7 @@
 
 /* Begin PBXFileReference section */
 		54209FF21B4D6FA700E2EEBE /* PlaylistTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewCell.swift; sourceTree = "<group>"; };
+		5468CA671B72A57C00D2CC31 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		B9D81B361B4C02A90007E4E3 /* TableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		B9D92FC61B27193D0065FAFC /* Spotify.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Spotify.framework; sourceTree = "<group>"; };
 		B9DBDF9B1B4571610015477A /* PlaylistTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaylistTableViewController.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				B9DDE2361B1713E900BC54FA /* LaunchScreen.xib */,
 				B9DDE22C1B1713E900BC54FA /* Info.plist */,
 				B9DDE25A1B18A75900BC54FA /* Preferences.plist */,
+				5468CA671B72A57C00D2CC31 /* Settings.bundle */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 			files = (
 				B9DDE2331B1713E900BC54FA /* Main.storyboard in Resources */,
 				B9DDE25B1B18A75900BC54FA /* Preferences.plist in Resources */,
+				5468CA681B72A57C00D2CC31 /* Settings.bundle in Resources */,
 				B9DDE2381B1713E900BC54FA /* LaunchScreen.xib in Resources */,
 				B9DDE2351B1713E900BC54FA /* Images.xcassets in Resources */,
 			);
@@ -401,7 +405,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/PlaylistExtender",
-					"/Users/laurenbrown/Downloads/ios-sdk-beta-9",
 				);
 				INFOPLIST_FILE = PlaylistExtender/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -419,7 +422,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/PlaylistExtender",
-					"/Users/laurenbrown/Downloads/ios-sdk-beta-9",
 				);
 				INFOPLIST_FILE = PlaylistExtender/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

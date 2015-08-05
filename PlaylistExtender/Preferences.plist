@@ -6,5 +6,7 @@
 	<string>&quot;GB&quot;</string>
 	<key>session_enabled</key>
 	<data></data>
+	<key>explicit_filter_preference</key>
+	<false/>
 </dict>
 </plist>

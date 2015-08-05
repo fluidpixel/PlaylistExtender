@@ -201,12 +201,10 @@ class PlaylistController: UIViewController, UITableViewDataSource, UITableViewDe
 		if self.currentPlaylist["playlistName"] != nil {
 			let number = Int(self.amountSlider.value)
 			
-            self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: extend, filter : (explicitSwitch.on)) { result in
+            self.playlistBuilder.buildPlaylist(self.currentPlaylist, session: self.session, sizeToIncreaseBy: number, name : name, extendOrBuild: extend, filter : (false)) { result in
 				
 				if result != nil {
-					
 					self.loadPlaylists()
-					
 				}
                 if result == "429" {
 					self.ShowErrorAlert()

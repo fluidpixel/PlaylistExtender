@@ -33,6 +33,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         auth.tokenRefreshURL = kTokenRefreshURL
         auth.sessionUserDefaultsKey = kSessionUserDefaultsKey
         
+        if let defaultPrefsFile = NSBundle.mainBundle().URLForResource("Preferences", withExtension: "plist") {
+            if let defaultPrefs = NSDictionary(contentsOfURL: defaultPrefsFile) as? [String:AnyObject] {
+                NSUserDefaults.standardUserDefaults().registerDefaults(defaultPrefs)
+            }
+        }
+        
         return true
     }
     
